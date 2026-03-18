@@ -10,6 +10,12 @@ import {
 import { useArgo } from '@/context/ArgoContext';
 import type { ExecutionTrace } from '@/types/argo';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // ─── Mock Files Data (shared) ────────────────────────────────
 
@@ -49,14 +55,14 @@ function TracePanel({ trace }: { trace: ExecutionTrace }) {
     <div className="border-t border-border">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent/30 transition-colors"
+        className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent/30 transition-colors"
       >
         {expanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
         <Activity className="w-3 h-3" />
         Execution Trace
       </button>
       {expanded && (
-        <div className="px-4 pb-4 space-y-3">
+        <div className="px-4 pb-4 space-y-3 animate-fade-in">
           <div className="grid grid-cols-2 gap-3">
             <TraceItem icon={Bot} label="Agent" value={`${trace.agentName} v${trace.agentVersion}`} />
             <TraceItem icon={Layers} label="Capability" value={trace.capability} />
@@ -67,7 +73,7 @@ function TracePanel({ trace }: { trace: ExecutionTrace }) {
           </div>
 
           <div>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Tools Used</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Tools Used</span>
             <div className="flex flex-wrap gap-1 mt-1">
               {trace.toolsUsed.map(t => (
                 <span key={t} className="px-2 py-0.5 rounded bg-secondary text-xs text-secondary-foreground font-mono">{t}</span>
@@ -77,7 +83,7 @@ function TracePanel({ trace }: { trace: ExecutionTrace }) {
 
           {trace.documentsRetrieved.length > 0 && (
             <div>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Documents Retrieved</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Documents Retrieved</span>
               <div className="mt-1 space-y-0.5">
                 {trace.documentsRetrieved.map(d => (
                   <div key={d} className="flex items-center gap-1.5 text-xs font-mono text-secondary-foreground">
@@ -90,26 +96,26 @@ function TracePanel({ trace }: { trace: ExecutionTrace }) {
           )}
 
           <div>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Execution Hierarchy</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Execution Hierarchy</span>
             <div className="mt-2 pl-1 text-xs font-mono text-secondary-foreground space-y-1">
               <div className="flex items-center gap-1.5">
                 <Bot className="w-3 h-3 text-foreground" />
-                <span className="text-foreground font-medium">Agent</span>
+                <span className="text-foreground font-bold">Agent</span>
                 <span className="text-muted-foreground">→ {trace.agentName}</span>
               </div>
               <div className="flex items-center gap-1.5 pl-4">
                 <Layers className="w-3 h-3 text-muted-foreground" />
-                <span className="text-foreground font-medium">Capability</span>
+                <span className="text-foreground font-bold">Capability</span>
                 <span className="text-muted-foreground">→ {trace.capability}</span>
               </div>
               <div className="flex items-center gap-1.5 pl-8">
                 <Wrench className="w-3 h-3 text-muted-foreground" />
-                <span className="text-foreground font-medium">Tools</span>
+                <span className="text-foreground font-bold">Tools</span>
                 <span className="text-muted-foreground">→ {trace.toolsUsed.join(', ')}</span>
               </div>
               <div className="flex items-center gap-1.5 pl-12">
                 <Database className="w-3 h-3 text-success" />
-                <span className="text-foreground font-medium">Data</span>
+                <span className="text-foreground font-bold">Data</span>
                 <span className="text-muted-foreground">→ {trace.documentsRetrieved.length > 0 ? trace.documentsRetrieved.join(', ') : 'structured output'}</span>
               </div>
             </div>
@@ -125,7 +131,7 @@ function TraceItem({ icon: Icon, label, value }: { icon: any; label: string; val
     <div className="flex items-start gap-2">
       <Icon className="w-3 h-3 mt-0.5 text-muted-foreground shrink-0" />
       <div>
-        <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</div>
+        <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{label}</div>
         <div className="text-xs text-foreground font-mono">{value}</div>
       </div>
     </div>
@@ -142,7 +148,6 @@ export function RightPanel() {
   const { activeArtifact, spaces, setActiveArtifactId, setRightPanelView, navigateToChat } = useArgo();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [viewingVersion, setViewingVersion] = useState<number | null>(null);
-  const [showVersionDropdown, setShowVersionDropdown] = useState(false);
 
   if (!activeArtifact) return null;
 
@@ -168,15 +173,15 @@ export function RightPanel() {
 
   return (
     <div className={cn(
-      "h-screen bg-background panel-border-left flex flex-col overflow-hidden transition-all",
+      "h-screen bg-background panel-border-left flex flex-col overflow-hidden animate-slide-in-right",
       isFullscreen ? "fixed inset-0 z-50 w-full" : "w-[480px] min-w-[400px]"
     )}>
       {/* Header */}
       <div className="px-4 py-3 border-b border-border space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <FileText className="w-4 h-4 text-foreground shrink-0" />
-            <h2 className="text-sm font-semibold text-foreground truncate">{activeArtifact.name}</h2>
+            <FileText className="w-4 h-4 text-primary shrink-0" />
+            <h2 className="text-sm font-bold text-foreground truncate">{activeArtifact.name}</h2>
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <button onClick={() => setIsFullscreen(!isFullscreen)} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
@@ -188,66 +193,64 @@ export function RightPanel() {
           </div>
         </div>
 
-        {/* Metadata */}
-        <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-[11px]">
+        {/* Metadata - improved 2-column layout */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
           <div>
-            <span className="text-muted-foreground">Type</span>
+            <span className="text-muted-foreground text-[11px]">Type</span>
             <div className="text-foreground font-mono mt-0.5">{typeLabels[activeArtifact.artifactType] || activeArtifact.artifactType}</div>
           </div>
           <div>
-            <span className="text-muted-foreground">Project</span>
+            <span className="text-muted-foreground text-[11px]">Project</span>
             <div className="text-foreground mt-0.5">{contextLabel}</div>
           </div>
           <div>
-            <span className="text-muted-foreground">File Size</span>
+            <span className="text-muted-foreground text-[11px]">File Size</span>
             <div className="text-foreground font-mono mt-0.5">{displayFileSize}</div>
           </div>
           <div>
-            <span className="text-muted-foreground">Last Updated</span>
+            <span className="text-muted-foreground text-[11px]">Last Updated</span>
             <div className="text-foreground font-mono mt-0.5">
               {displayTimestamp.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
           <div>
-            <span className="text-muted-foreground">Version</span>
-            <div className="relative">
-              <button
-                onClick={() => setShowVersionDropdown(!showVersionDropdown)}
-                className="flex items-center gap-1 text-foreground font-mono mt-0.5 hover:text-primary transition-colors"
-              >
-                v{currentVersion}
-                {currentVersion === activeArtifact.version && <span className="text-[9px] text-muted-foreground">(current)</span>}
-                {activeArtifact.versions && activeArtifact.versions.length > 1 && <ChevronDown className="w-2.5 h-2.5" />}
-              </button>
-              {showVersionDropdown && activeArtifact.versions && activeArtifact.versions.length > 1 && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowVersionDropdown(false)} />
-                  <div className="absolute left-0 top-full mt-1 w-48 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
+            <span className="text-muted-foreground text-[11px]">Version</span>
+            <div className="mt-0.5">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-1 text-foreground font-mono hover:text-primary transition-colors">
+                    v{currentVersion}
+                    {currentVersion === activeArtifact.version && <span className="text-[9px] text-muted-foreground">(current)</span>}
+                    {activeArtifact.versions && activeArtifact.versions.length > 1 && <ChevronDown className="w-2.5 h-2.5" />}
+                  </button>
+                </DropdownMenuTrigger>
+                {activeArtifact.versions && activeArtifact.versions.length > 1 && (
+                  <DropdownMenuContent align="start" className="w-48">
                     {[...activeArtifact.versions].reverse().map(v => (
-                      <button
+                      <DropdownMenuItem
                         key={v.version}
-                        onClick={() => { setViewingVersion(v.version); setShowVersionDropdown(false); }}
-                        className={cn("w-full text-left px-3 py-2 text-xs hover:bg-accent transition-colors", v.version === currentVersion && "bg-accent font-medium")}
+                        onClick={() => setViewingVersion(v.version)}
+                        className={cn(v.version === currentVersion && "bg-accent font-semibold")}
                       >
                         <span className="font-mono">v{v.version}</span>
                         {v.version === activeArtifact.version && <span className="ml-1 text-muted-foreground">(current)</span>}
-                        <span className="text-muted-foreground ml-2">{v.timestamp.toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
-                      </button>
+                        <span className="text-muted-foreground ml-auto">{v.timestamp.toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+                      </DropdownMenuItem>
                     ))}
-                  </div>
-                </>
-              )}
+                  </DropdownMenuContent>
+                )}
+              </DropdownMenu>
             </div>
           </div>
         </div>
 
         {/* Actions bar */}
         <div className="flex items-center gap-2 pt-1">
-          <button className="flex items-center gap-1 px-2 py-1 rounded text-[10px] text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="Download as DOCX">
+          <button className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="Download as DOCX">
             <Download className="w-3 h-3" />
             Download
           </button>
-          <button onClick={handleOpenInChat} className="flex items-center gap-1 px-2 py-1 rounded text-[10px] text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="Open in Chat">
+          <button onClick={handleOpenInChat} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="Open in Chat">
             <MessageSquare className="w-3 h-3" />
             Open in Chat
           </button>
@@ -257,7 +260,7 @@ export function RightPanel() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto argo-scrollbar px-4 py-4">
-        <div className="artifact-markdown">
+        <div className="artifact-markdown animate-fade-in">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {displayContent}
           </ReactMarkdown>
@@ -285,13 +288,13 @@ export function FilesPanel() {
   if (!activeFilesSpaceId || !space) return null;
 
   return (
-    <div className="w-[420px] min-w-[360px] h-screen bg-background panel-border-left flex flex-col overflow-hidden">
+    <div className="w-[420px] min-w-[360px] h-screen bg-background panel-border-left flex flex-col overflow-hidden animate-slide-in-right">
       {/* Header */}
       <div className="px-4 py-3 border-b border-border space-y-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <FolderOpen className="w-4 h-4 text-foreground shrink-0" />
-            <h2 className="text-sm font-semibold text-foreground truncate">Files — {space.name}</h2>
+            <FolderOpen className="w-4 h-4 text-primary shrink-0" />
+            <h2 className="text-sm font-bold text-foreground truncate">Files — {space.name}</h2>
           </div>
           <button onClick={closeFilesPanel} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
             <X className="w-4 h-4" />
@@ -301,9 +304,9 @@ export function FilesPanel() {
 
         {/* Upload + count */}
         <div className="flex items-center justify-between">
-          <span className="text-[11px] text-muted-foreground">{filtered.length} file{filtered.length !== 1 ? 's' : ''}</span>
+          <span className="text-xs text-muted-foreground">{filtered.length} file{filtered.length !== 1 ? 's' : ''}</span>
           {isOwner ? (
-            <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-foreground text-background text-xs font-medium hover:opacity-90 transition-opacity">
+            <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
               <Upload className="w-3 h-3" />
               Upload File
             </button>
@@ -316,14 +319,15 @@ export function FilesPanel() {
       {/* File List */}
       <div className="flex-1 overflow-y-auto argo-scrollbar">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16">
+          <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
             <FileText className="w-8 h-8 text-muted-foreground mb-3" />
-            <p className="text-sm text-muted-foreground">No files found.</p>
+            <p className="text-sm font-medium text-muted-foreground">No files uploaded yet.</p>
+            <p className="text-xs text-muted-foreground mt-1">Upload files to share with your project.</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
             {filtered.map((f, i) => (
-              <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-secondary/20 transition-colors group">
+              <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-accent/30 transition-colors group">
                 <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center shrink-0 mt-0.5">
                   <FileText className="w-4 h-4 text-muted-foreground" />
                 </div>

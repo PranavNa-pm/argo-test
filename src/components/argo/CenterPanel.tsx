@@ -5,11 +5,18 @@ import {
   Wrench, BookOpen, Cpu, Database, DollarSign, Timer,
   Copy, Trash2, Users, FolderOpen, MoreVertical, Lock, Unlock,
   ArrowLeft, SquarePen, ThumbsUp, ThumbsDown, ChevronRight,
-  Share2, Upload, Globe as GlobeIcon, X, Link2, ExternalLink
+  Share2, Upload, Globe as GlobeIcon, X, Link2, ExternalLink,
+  FileSignature, Table2, ScrollText, AlertCircle
 } from 'lucide-react';
 import { useArgo, AGENTS, TOOLS } from '@/context/ArgoContext';
 import { cn } from '@/lib/utils';
 import type { AdminTab } from '@/types/argo';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // ─── Users Mapped Cell ───────────────────────────────────────
 
@@ -19,12 +26,12 @@ function UsersMappedCell({ count, users }: { count: number; users: string[] }) {
     <div>
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm font-medium text-primary hover:underline cursor-pointer"
+        className="text-sm font-semibold text-primary hover:underline cursor-pointer"
       >
         {count}
       </button>
       {expanded && (
-        <div className="mt-1.5 space-y-0.5">
+        <div className="mt-1.5 space-y-0.5 animate-fade-in">
           {users.map(u => (
             <div key={u} className="text-xs text-muted-foreground">{u}</div>
           ))}
@@ -34,35 +41,49 @@ function UsersMappedCell({ count, users }: { count: number; users: string[] }) {
   );
 }
 
-// ─── Chat 3-dot Menu ─────────────────────────────────────────
+// ─── Chat 3-dot Menu (Radix) ─────────────────────────────────
 
 function ChatMoreMenu({ chatId, chatName, renameChat }: { chatId: string; chatName: string; renameChat: (id: string, name: string) => void }) {
-  const [open, setOpen] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState(chatName);
+
+  if (renaming) {
+    return (
+      <div className="flex items-center gap-1">
+        <input
+          value={renameValue}
+          onChange={e => setRenameValue(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') { renameChat(chatId, renameValue.trim() || chatName); setRenaming(false); }
+            if (e.key === 'Escape') setRenaming(false);
+          }}
+          onBlur={() => { renameChat(chatId, renameValue.trim() || chatName); setRenaming(false); }}
+          className="text-xs bg-background border border-border rounded-md px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-ring w-32"
+          autoFocus
+          onClick={e => e.stopPropagation()}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="relative">
-      <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground" onClick={e => { e.stopPropagation(); setOpen(!open); }}>
-        <MoreVertical className="w-3.5 h-3.5" />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1 w-36 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
-            <button
-              onClick={e => {
-                e.stopPropagation();
-                setOpen(false);
-                const newName = prompt('Rename chat:', chatName);
-                if (newName && newName.trim()) renameChat(chatId, newName.trim());
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-              Rename Chat
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
+          <MoreVertical className="w-3.5 h-3.5" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-36">
+        <DropdownMenuItem onClick={(e) => {
+          e.stopPropagation();
+          setRenameValue(chatName);
+          setRenaming(true);
+        }}>
+          <Pencil className="w-3.5 h-3.5 mr-2" />
+          Rename Chat
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -92,13 +113,13 @@ function ConfigView({ tab }: { tab: AdminTab }) {
     const availableRoles = ['Admin', 'All Users'];
 
     return (
-      <div className="w-full p-6 space-y-5">
+      <div className="w-full p-6 space-y-5 animate-fade-in">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Agent Configuration</h2>
+          <h2 className="text-lg font-bold text-foreground">Agent Configuration</h2>
           {!showAddAgent && !editingAgentId && (
             <button
               onClick={() => { setNewAgent(defaultAgent); setShowAddAgent(true); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               New Agent
@@ -117,20 +138,20 @@ function ConfigView({ tab }: { tab: AdminTab }) {
         </div>
 
         {(showAddAgent || editingAgentId) && (
-          <div className="p-5 rounded-lg border border-border bg-secondary/20 space-y-4 max-w-2xl">
-            <h3 className="text-sm font-semibold text-foreground">{editingAgentId ? 'Edit Agent' : 'Create New Agent'}</h3>
+          <div className="p-5 rounded-lg border border-border bg-secondary/20 space-y-4 max-w-2xl animate-scale-in">
+            <h3 className="text-sm font-bold text-foreground">{editingAgentId ? 'Edit Agent' : 'Create New Agent'}</h3>
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1">Agent Name</label>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Agent Name</label>
                 <input value={newAgent.name} onChange={e => setNewAgent({ ...newAgent, name: e.target.value })} placeholder="e.g. Research Agent" className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1">Short Description</label>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Short Description</label>
                 <input value={newAgent.description} onChange={e => setNewAgent({ ...newAgent, description: e.target.value })} placeholder="What does this agent do?" className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground block mb-1">Prompt Template</label>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">Prompt Template</label>
                   <select className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring">
                     <option>Pre-Sales Prompt v1.2</option>
                     <option>Company Info Prompt v1.0</option>
@@ -138,7 +159,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground block mb-1">Model Selection</label>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">Model Selection</label>
                   <select value={newAgent.model} onChange={e => setNewAgent({ ...newAgent, model: e.target.value })} className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground focus:outline-none focus:ring-1 focus:ring-ring">
                     <option value="gpt-4o">GPT-4o</option>
                     <option value="gpt-4-turbo">GPT-4 Turbo</option>
@@ -147,7 +168,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                 </div>
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1.5">Capabilities</label>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1.5">Capabilities</label>
                 <div className="space-y-1.5">
                   {['Web Search', 'Artifact (Create, Update, Retrieve)', 'Project Knowledge', 'Code Interpreter', 'File Attachments'].map(cap => (
                     <label key={cap} className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
@@ -158,7 +179,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                 </div>
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1.5">Agent Type</label>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1.5">Agent Type</label>
                 <div className="flex items-center gap-3">
                   <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
                     <input type="radio" name="agentType" checked={newAgent.agentType === 'system'} onChange={() => setNewAgent({ ...newAgent, agentType: 'system', sharedWithRoles: [] })} />
@@ -172,7 +193,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
               </div>
               {newAgent.agentType === 'shared' && (
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground block mb-1.5">Share with Roles</label>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1.5">Share with Roles</label>
                   <div className="space-y-1.5">
                     {availableRoles.map(role => (
                       <label key={role} className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
@@ -193,9 +214,9 @@ function ConfigView({ tab }: { tab: AdminTab }) {
               )}
             </div>
             <div className="flex gap-2 pt-1">
-              <button className="px-3 py-1.5 rounded-md bg-foreground text-background text-sm font-medium hover:opacity-90">{editingAgentId ? 'Save Changes' : 'Create Agent'}</button>
+              <button className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90">{editingAgentId ? 'Save Changes' : 'Create Agent'}</button>
               {editingAgentId && (
-                <button className="px-3 py-1.5 rounded-md bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90">Delete Agent</button>
+                <button className="px-3 py-1.5 rounded-md bg-destructive text-destructive-foreground text-sm font-semibold hover:opacity-90">Delete Agent</button>
               )}
               <button onClick={() => { setShowAddAgent(false); setEditingAgentId(null); setNewAgent(defaultAgent); }} className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground">Cancel</button>
             </div>
@@ -204,16 +225,16 @@ function ConfigView({ tab }: { tab: AdminTab }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filteredAgents.map(agent => (
-            <div key={agent.id} className="p-4 rounded-lg border border-border space-y-3 hover:border-foreground/20 transition-colors">
+            <div key={agent.id} className="p-4 rounded-lg border border-border space-y-3 hover:border-primary/30 transition-colors">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <Bot className="w-4 h-4 text-foreground" />
-                  <span className="text-sm font-medium text-foreground">{agent.name}</span>
+                  <Bot className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-foreground">{agent.name}</span>
                   <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center" title={`${roleCounts[agent.id] || 0} user roles mapped to this agent`}>
                     <span className="text-[10px] font-bold text-primary-foreground">{roleCounts[agent.id] || 0}</span>
                   </div>
                 </div>
-                <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full", (agent as any).agentType === 'shared' ? "bg-accent text-accent-foreground" : "bg-secondary text-muted-foreground")}>{(agent as any).agentType === 'shared' ? 'Shared' : 'System'}</span>
+                <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", (agent as any).agentType === 'shared' ? "bg-accent text-accent-foreground" : "bg-secondary text-muted-foreground")}>{(agent as any).agentType === 'shared' ? 'Shared' : 'System'}</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">{agent.description}</p>
               <div className="text-xs text-muted-foreground">
@@ -281,16 +302,16 @@ function ConfigView({ tab }: { tab: AdminTab }) {
       : prompts;
 
     return (
-      <div className="w-full p-6 space-y-4">
+      <div className="w-full p-6 space-y-4 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Prompt Manager</h2>
+            <h2 className="text-lg font-bold text-foreground">Prompt Manager</h2>
             <p className="text-sm text-muted-foreground mt-1">Create, edit, and manage your prompt templates with versioning.</p>
           </div>
           {!showNewPrompt && (
             <button
               onClick={() => setShowNewPrompt(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               New Prompt
@@ -309,24 +330,24 @@ function ConfigView({ tab }: { tab: AdminTab }) {
         </div>
 
         {showNewPrompt && (
-          <div className="p-5 rounded-lg border border-border bg-secondary/20 space-y-4 max-w-2xl">
-            <h3 className="text-sm font-semibold text-foreground">Create New Prompt</h3>
+          <div className="p-5 rounded-lg border border-border bg-secondary/20 space-y-4 max-w-2xl animate-scale-in">
+            <h3 className="text-sm font-bold text-foreground">Create New Prompt</h3>
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1">Prompt Name</label>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Prompt Name</label>
                 <input placeholder="e.g. Research Prompt" className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1">Short Description</label>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Short Description</label>
                 <input placeholder="What is this prompt for?" className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1">Prompt Template Text</label>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Prompt Template Text</label>
                 <textarea rows={5} placeholder="Enter your prompt template..." className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-ring" />
               </div>
             </div>
             <div className="flex gap-2 pt-1">
-              <button className="px-3 py-1.5 rounded-md bg-foreground text-background text-sm font-medium hover:opacity-90">Create Prompt</button>
+              <button className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90">Create Prompt</button>
               <button onClick={() => setShowNewPrompt(false)} className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground">Cancel</button>
             </div>
           </div>
@@ -342,7 +363,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                 {expandedPromptIdx === i ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
                 <BookOpen className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <div className="text-foreground font-medium">{p.name}</div>
+                  <div className="text-foreground font-semibold">{p.name}</div>
                   <div className="text-xs text-muted-foreground truncate">{p.description}</div>
                 </div>
                 <span className="text-xs font-mono text-muted-foreground">{p.version}</span>
@@ -350,17 +371,17 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                 <div className="flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
                   <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="View"><Eye className="w-3.5 h-3.5" /></button>
                   <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Copy"><Copy className="w-3.5 h-3.5" /></button>
-                  <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button className="p-1.5 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
               {expandedPromptIdx === i && (
-                <div className="px-4 pb-4 pt-1 border-t border-border bg-secondary/10 space-y-3">
+                <div className="px-4 pb-4 pt-1 border-t border-border bg-secondary/10 space-y-3 animate-fade-in">
                   <div>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Prompt Template</span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Prompt Template</span>
                     <div className="mt-1.5 p-3 rounded-md bg-background border border-border text-xs font-mono text-foreground leading-relaxed whitespace-pre-wrap">{p.template}</div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Linked Agents ({p.linkedAgents.length})</span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Linked Agents ({p.linkedAgents.length})</span>
                     <div className="flex gap-1.5">
                       {p.linkedAgents.map(a => (
                         <span key={a} className="px-2 py-0.5 rounded-full bg-accent text-[10px] text-accent-foreground">{a}</span>
@@ -399,13 +420,13 @@ function ConfigView({ tab }: { tab: AdminTab }) {
     ];
 
     return (
-      <div className="w-full p-6 space-y-4">
+      <div className="w-full p-6 space-y-4 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Group Permissions</h2>
+            <h2 className="text-lg font-bold text-foreground">Group Permissions</h2>
             <p className="text-sm text-muted-foreground mt-1">Configure access rights for each group.</p>
           </div>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">
             <Plus className="w-3.5 h-3.5" />
             Add Group
           </button>
@@ -415,10 +436,10 @@ function ConfigView({ tab }: { tab: AdminTab }) {
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
               <tr className="bg-secondary border-b border-border">
-                <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-48">Group Name</th>
-                <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-32">Users Mapped</th>
-                <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider">Access Rights</th>
-                <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-36">Actions</th>
+                <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-48">Group Name</th>
+                <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-32">Users Mapped</th>
+                <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Access Rights</th>
+                <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-36">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -431,33 +452,30 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                 const mapped = usersMapped[g.name] || { count: 0, users: [] };
                 return (
                 <tr key={i} className="border-b border-border last:border-0 align-top">
-                  <td className="px-4 py-3 font-medium text-foreground">{g.name}</td>
+                  <td className="px-4 py-3 font-semibold text-foreground">{g.name}</td>
                   <td className="px-4 py-3">
                     <UsersMappedCell count={mapped.count} users={mapped.users} />
                   </td>
                   <td className="px-4 py-3 space-y-2.5">
-                    {/* Assigned Agents */}
                     <div>
-                      <span className="text-xs font-semibold text-foreground">Assigned Agents:</span>
+                      <span className="text-xs font-bold text-foreground">Assigned Agents:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {g.agents.map(a => (
                           <span key={a} className="px-2 py-0.5 rounded-full bg-secondary text-xs text-secondary-foreground">{a}</span>
                         ))}
                       </div>
                     </div>
-                    {/* Project Sharing */}
                     {g.canShare && (
                       <div>
-                        <span className="text-xs font-semibold text-foreground">Project Sharing:</span>
+                        <span className="text-xs font-bold text-foreground">Project Sharing:</span>
                         <div className="mt-1">
-                          <span className="px-2 py-0.5 rounded-full bg-accent text-[10px] font-medium text-accent-foreground">Can Share</span>
+                          <span className="px-2 py-0.5 rounded-full bg-accent text-[10px] font-semibold text-accent-foreground">Can Share</span>
                         </div>
                       </div>
                     )}
-                    {/* Management Rights */}
                     {g.rights.length > 0 && (
                       <div>
-                        <span className="text-xs font-semibold text-foreground">Management Rights:</span>
+                        <span className="text-xs font-bold text-foreground">Management Rights:</span>
                         <ul className="mt-1 space-y-0.5">
                           {g.rights.map(r => (
                             <li key={r} className="text-xs text-muted-foreground">{r}</li>
@@ -472,7 +490,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
                       <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Edit"><Pencil className="w-3.5 h-3.5" /></button>
-                      <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <button className="p-1.5 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
                       <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Map Users"><Users className="w-3.5 h-3.5" /></button>
                       <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="View"><Eye className="w-3.5 h-3.5" /></button>
                     </div>
@@ -498,8 +516,6 @@ function ArtifactsTable() {
   const [sortAsc, setSortAsc] = useState(false);
   const [contextFilter, setContextFilter] = useState<'all' | 'general-chat' | 'projects'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [showContextDropdown, setShowContextDropdown] = useState(false);
-  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
 
@@ -542,9 +558,9 @@ function ArtifactsTable() {
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className="w-full p-6 space-y-4">
+    <div className="w-full p-6 space-y-4 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Artifact Library</h2>
+        <h2 className="text-lg font-bold text-foreground">Artifact Library</h2>
       </div>
 
       <div className="flex items-center gap-3 flex-wrap">
@@ -558,50 +574,37 @@ function ArtifactsTable() {
           />
         </div>
 
-        {/* Context Filter */}
-        <div className="relative">
-          <button
-            onClick={() => { setShowContextDropdown(!showContextDropdown); setShowTypeDropdown(false); }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-          >
-            {contextFilter === 'all' ? 'All Projects' : contextFilter === 'general-chat' ? 'General Chat' : 'Projects'}
-            <ChevronDown className="w-3.5 h-3.5" />
-          </button>
-          {showContextDropdown && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setShowContextDropdown(false)} />
-              <div className="absolute right-0 top-full mt-1 w-40 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
-                {[{ key: 'all', label: 'All Projects' }, { key: 'general-chat', label: 'General Chat' }, { key: 'projects', label: 'Projects' }].map(f => (
-                  <button key={f.key} onClick={() => { setContextFilter(f.key as any); setShowContextDropdown(false); setPage(1); }} className={cn("w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors", contextFilter === f.key && "bg-accent font-medium text-foreground")}>{f.label}</button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        {/* Context Filter - Radix */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+              {contextFilter === 'all' ? 'All Projects' : contextFilter === 'general-chat' ? 'General Chat' : 'Projects'}
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {[{ key: 'all', label: 'All Projects' }, { key: 'general-chat', label: 'General Chat' }, { key: 'projects', label: 'Projects' }].map(f => (
+              <DropdownMenuItem key={f.key} onClick={() => { setContextFilter(f.key as any); setPage(1); }} className={cn(contextFilter === f.key && "bg-accent font-semibold")}>{f.label}</DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        {/* Type Filter */}
-        <div className="relative">
-          <button
-            onClick={() => { setShowTypeDropdown(!showTypeDropdown); setShowContextDropdown(false); }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-          >
-            {typeFilter === 'all' ? 'All Types' : typeLabels[typeFilter] || typeFilter}
-            <ChevronDown className="w-3.5 h-3.5" />
-          </button>
-          {showTypeDropdown && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setShowTypeDropdown(false)} />
-              <div className="absolute right-0 top-full mt-1 w-40 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
-                <button onClick={() => { setTypeFilter('all'); setShowTypeDropdown(false); setPage(1); }} className={cn("w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors", typeFilter === 'all' && "bg-accent font-medium text-foreground")}>All Types</button>
-                {artifactTypes.map(t => (
-                  <button key={t} onClick={() => { setTypeFilter(t); setShowTypeDropdown(false); setPage(1); }} className={cn("w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors", typeFilter === t && "bg-accent font-medium text-foreground")}>{typeLabels[t] || t}</button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        {/* Type Filter - Radix */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+              {typeFilter === 'all' ? 'All Types' : typeLabels[typeFilter] || typeFilter}
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => { setTypeFilter('all'); setPage(1); }} className={cn(typeFilter === 'all' && "bg-accent font-semibold")}>All Types</DropdownMenuItem>
+            {artifactTypes.map(t => (
+              <DropdownMenuItem key={t} onClick={() => { setTypeFilter(t); setPage(1); }} className={cn(typeFilter === t && "bg-accent font-semibold")}>{typeLabels[t] || t}</DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        {/* Sort */}
         <button
           onClick={() => setSortAsc(!sortAsc)}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
@@ -613,9 +616,10 @@ function ArtifactsTable() {
       <span className="text-sm text-muted-foreground">{filtered.length} artifact{filtered.length !== 1 ? 's' : ''} found</span>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16">
+        <div className="text-center py-16 animate-fade-in">
           <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">No artifacts found.</p>
+          <p className="text-sm font-medium text-muted-foreground">No artifacts found.</p>
+          <p className="text-xs text-muted-foreground mt-1">Generate artifacts by chatting with an agent.</p>
         </div>
       ) : (
         <>
@@ -623,12 +627,12 @@ function ArtifactsTable() {
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10">
                 <tr className="bg-secondary border-b border-border">
-                  <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider">Artifact Title</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider">Project</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-32">Type</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">Version</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">Date Created</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">Actions</th>
+                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Artifact Title</th>
+                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Project</th>
+                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-32">Type</th>
+                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-20">Version</th>
+                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-28">Date Created</th>
+                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-28">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -640,27 +644,21 @@ function ArtifactsTable() {
                   return (
                     <tr key={a.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
                       <td className="px-4 py-3">
-                        <button onClick={() => handleView(a.id)} className="text-left font-medium text-foreground hover:text-primary transition-colors">
+                        <button onClick={() => handleView(a.id)} className="text-left font-semibold text-foreground hover:text-primary transition-colors">
                           {titleDisplay}
                         </button>
                       </td>
+                      <td className="px-4 py-3 text-muted-foreground">{space?.isDefault ? 'General Chat' : space?.name || '—'}</td>
                       <td className="px-4 py-3">
-                        <span className={cn("text-xs px-2 py-0.5 rounded-full", space?.isDefault ? "bg-secondary text-secondary-foreground" : "bg-primary/10 text-primary")}>
-                          {space?.isDefault ? 'General Chat' : space?.name || '—'}
-                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-secondary text-xs text-secondary-foreground">{typeLabels[a.artifactType] || a.artifactType}</span>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{typeLabels[a.artifactType] || a.artifactType}</td>
-                      <td className="px-4 py-3 text-muted-foreground font-mono text-xs">v{a.version}</td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{dateStr}</td>
+                      <td className="px-4 py-3 font-mono text-muted-foreground">v{a.version}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{dateStr}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1">
                           <button onClick={() => handleView(a.id)} className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="View"><Eye className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => {
-                            const newName = prompt('Rename artifact:', a.name);
-                            if (newName && newName.trim()) renameArtifact(a.id, newName.trim());
-                          }} className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Rename"><Pencil className="w-3.5 h-3.5" /></button>
-                          <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Download as DOCX"><Download className="w-3.5 h-3.5" /></button>
                           <button onClick={() => handleOpenInChat(a.chatId)} className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Open in Chat"><MessageSquare className="w-3.5 h-3.5" /></button>
+                          <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Download"><Download className="w-3.5 h-3.5" /></button>
                         </div>
                       </td>
                     </tr>
@@ -674,14 +672,14 @@ function ArtifactsTable() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
               <p className="text-xs text-muted-foreground">
-                Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+                Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} artifacts
               </p>
               <div className="flex items-center gap-1">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Previous</button>
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Previous</button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                  <button key={p} onClick={() => setPage(p)} className={cn("w-7 h-7 rounded text-xs font-medium transition-colors", p === page ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground hover:bg-accent")}>{p}</button>
+                  <button key={p} onClick={() => setPage(p)} className={cn("w-7 h-7 rounded text-xs font-semibold transition-colors", p === page ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")}>{p}</button>
                 ))}
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Next</button>
+                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Next</button>
               </div>
             </div>
           )}
@@ -691,10 +689,15 @@ function ArtifactsTable() {
   );
 }
 
-// ─── Project Workspace View ──────────────────────────────────
+// ─── Space Workspace ─────────────────────────────────────────
 
 function SpaceWorkspaceView() {
-  const { spaces, activeSpaceId, chats, artifacts, setActiveChatId, setCenterView, createChat, exitSpace, setActiveArtifactId, setRightPanelView, renameChat, renameSpace, openFilesPanel } = useArgo();
+  const {
+    spaces, activeSpaceId, chats, artifacts,
+    setActiveChatId, setCenterView, createChat, renameChat, renameSpace,
+    setActiveArtifactId, setRightPanelView, openFilesPanel,
+  } = useArgo();
+
   const space = spaces.find(s => s.id === activeSpaceId);
   const spaceChats = chats.filter(c => c.spaceId === activeSpaceId);
   const spaceArtifacts = artifacts.filter(a => a.spaceId === activeSpaceId);
@@ -726,13 +729,13 @@ function SpaceWorkspaceView() {
   };
 
   return (
-    <div className="w-full p-6 space-y-6">
+    <div className="w-full p-6 space-y-6 animate-fade-in">
 
       {/* Project Header */}
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <FolderOpen className="w-5 h-5 text-foreground" />
+            <FolderOpen className="w-5 h-5 text-primary" />
             {editing ? (
               <input
                 value={editName}
@@ -742,14 +745,14 @@ function SpaceWorkspaceView() {
                   if (e.key === 'Escape') setEditing(false);
                 }}
                 onBlur={() => { renameSpace(activeSpaceId, editName.trim() || space.name); setEditing(false); }}
-                className="text-xl font-semibold text-foreground bg-background border border-border rounded-md px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-ring"
+                className="text-xl font-bold text-foreground bg-background border border-border rounded-md px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-ring"
                 autoFocus
               />
             ) : (
-              <h1 className="text-xl font-semibold text-foreground">{space.name}</h1>
+              <h1 className="text-xl font-bold text-foreground">{space.name}</h1>
             )}
             <span className="text-sm text-muted-foreground">•</span>
-            <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", isShared ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground")}>{isShared ? 'Shared' : 'Private'}</span>
+            <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", isShared ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground")}>{isShared ? 'Shared' : 'Private'}</span>
             {isOwner && !space.isDefault && (
               <button onClick={() => { setEditName(space.name); setEditing(!editing); }} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Edit project">
                 <Pencil className="w-3.5 h-3.5" />
@@ -762,7 +765,6 @@ function SpaceWorkspaceView() {
           {space.description && <p className="text-sm text-muted-foreground mt-1">{space.description}</p>}
         </div>
         <div className="flex items-center gap-2">
-          {/* Files Button */}
           {!space.isDefault && (
             <button
               onClick={() => openFilesPanel(activeSpaceId)}
@@ -784,9 +786,9 @@ function SpaceWorkspaceView() {
               {showShareMenu && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => { setShowShareMenu(false); setShareSearch(''); }} />
-                  <div className="absolute right-0 top-full mt-1 w-80 bg-popover border border-border rounded-lg shadow-lg z-20 p-3 space-y-3">
+                  <div className="absolute right-0 top-full mt-1 w-80 bg-popover border border-border rounded-lg shadow-lg z-20 p-3 space-y-3 animate-scale-in">
                     <div>
-                      <div className="text-xs font-medium text-foreground mb-1.5">Share via Link</div>
+                      <div className="text-xs font-semibold text-foreground mb-1.5">Share via Link</div>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 px-2.5 py-1.5 bg-secondary/50 border border-border rounded-md text-xs text-muted-foreground font-mono truncate select-all">
                           https://argo.app/project/{space?.id || 'project-1'}
@@ -805,7 +807,7 @@ function SpaceWorkspaceView() {
                       <p className="text-[10px] text-muted-foreground mt-1">Anyone with this link must log in to view the project.</p>
                     </div>
                     <div className="border-t border-border" />
-                    <div className="text-xs font-medium text-foreground mb-2">Share with members</div>
+                    <div className="text-xs font-semibold text-foreground mb-2">Share with members</div>
                     <div className="flex items-center gap-2 px-2.5 py-1.5 bg-background border border-border rounded-md mb-2">
                       <Search className="w-3 h-3 text-muted-foreground shrink-0" />
                       <input
@@ -822,7 +824,7 @@ function SpaceWorkspaceView() {
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{m.role}</span>
                       </label>
                     ))}
-                    <button className="w-full mt-2 px-3 py-1.5 rounded-md bg-foreground text-background text-xs font-medium hover:opacity-90">Update Sharing</button>
+                    <button className="w-full mt-2 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90">Update Sharing</button>
                   </div>
                 </>
               )}
@@ -834,17 +836,21 @@ function SpaceWorkspaceView() {
       {/* Chats */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-foreground">Chats ({spaceChats.length})</h3>
+          <h3 className="text-sm font-semibold text-foreground">Chats ({spaceChats.length})</h3>
           <button
             onClick={() => createChat('New Chat', activeSpaceId)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
           >
             <SquarePen className="w-3.5 h-3.5" />
             New Chat
           </button>
         </div>
         {spaceChats.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No chats yet. Create one to get started.</p>
+          <div className="text-center py-8 animate-fade-in">
+            <MessageSquare className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+            <p className="text-sm font-medium text-muted-foreground">No chats yet.</p>
+            <p className="text-xs text-muted-foreground mt-1">Create one to get started with this project.</p>
+          </div>
         ) : (
           <>
             <div className="space-y-1">
@@ -868,11 +874,11 @@ function SpaceWorkspaceView() {
                     Showing {(chatPage - 1) * CHAT_PAGE_SIZE + 1}–{Math.min(chatPage * CHAT_PAGE_SIZE, spaceChats.length)} of {spaceChats.length} chats
                   </p>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setChatPage(p => Math.max(1, p - 1))} disabled={chatPage === 1} className="px-2.5 py-1 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Previous</button>
+                    <button onClick={() => setChatPage(p => Math.max(1, p - 1))} disabled={chatPage === 1} className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Previous</button>
                     {Array.from({ length: totalChatPages }, (_, i) => i + 1).map(p => (
-                      <button key={p} onClick={() => setChatPage(p)} className={cn("w-7 h-7 rounded text-xs font-medium transition-colors", p === chatPage ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")}>{p}</button>
+                      <button key={p} onClick={() => setChatPage(p)} className={cn("w-7 h-7 rounded text-xs font-semibold transition-colors", p === chatPage ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")}>{p}</button>
                     ))}
-                    <button onClick={() => setChatPage(p => Math.min(totalChatPages, p + 1))} disabled={chatPage === totalChatPages} className="px-2.5 py-1 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Next</button>
+                    <button onClick={() => setChatPage(p => Math.min(totalChatPages, p + 1))} disabled={chatPage === totalChatPages} className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Next</button>
                   </div>
                 </div>
               );
@@ -890,11 +896,9 @@ function SpaceWorkspaceView() {
 function CreateSpaceView() {
   const { createSpace, setCenterView } = useArgo();
 
-  // Join state
   const [joinCode, setJoinCode] = useState('');
   const [joinError, setJoinError] = useState('');
 
-  // Create state
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [projectContext, setProjectContext] = useState('');
@@ -938,16 +942,16 @@ function CreateSpaceView() {
   };
 
   return (
-    <div className="w-full p-6 space-y-6 max-w-2xl mx-auto">
+    <div className="w-full p-6 space-y-6 max-w-2xl mx-auto animate-fade-in">
       <div>
-        <h1 className="text-xl font-semibold text-foreground">Create Project</h1>
+        <h1 className="text-xl font-bold text-foreground">Create Project</h1>
         <p className="text-sm text-muted-foreground mt-1">Join an existing project or create a new one.</p>
       </div>
 
       {/* ── Section 1: Join a Project ── */}
       <div className="p-5 rounded-lg border border-border bg-secondary/10 space-y-3">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Join a Project</h2>
+          <h2 className="text-sm font-bold text-foreground">Join a Project</h2>
           <p className="text-xs text-muted-foreground mt-0.5">Paste a shared project link or access code to join.</p>
         </div>
         <div>
@@ -955,14 +959,19 @@ function CreateSpaceView() {
             value={joinCode}
             onChange={e => { setJoinCode(e.target.value); setJoinError(''); }}
             placeholder="Enter project access code or link"
-            className="w-full text-sm bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+            className={cn("w-full text-sm bg-background border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring", joinError ? "border-destructive" : "border-border")}
           />
           <p className="text-[10px] text-muted-foreground mt-1">Anyone using this link must log in to Argo to access the project.</p>
-          {joinError && <p className="text-[11px] text-destructive mt-1">{joinError}</p>}
+          {joinError && (
+            <div className="flex items-center gap-1.5 mt-1.5 animate-fade-in">
+              <AlertCircle className="w-3 h-3 text-destructive shrink-0" />
+              <p className="text-xs text-destructive">{joinError}</p>
+            </div>
+          )}
         </div>
         <button
           onClick={handleJoin}
-          className="px-4 py-2 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
+          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
         >
           Join
         </button>
@@ -971,20 +980,20 @@ function CreateSpaceView() {
       {/* Visual separator */}
       <div className="flex items-center gap-3">
         <div className="flex-1 border-t border-border" />
-        <span className="text-xs text-muted-foreground">or</span>
+        <span className="text-xs text-muted-foreground font-medium">or</span>
         <div className="flex-1 border-t border-border" />
       </div>
 
       {/* ── Section 2: Create a New Project ── */}
       <div className="p-5 rounded-lg border border-border bg-secondary/10 space-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Create a New Project</h2>
+          <h2 className="text-sm font-bold text-foreground">Create a New Project</h2>
           <p className="text-xs text-muted-foreground mt-0.5">Set up a new project with its own chats, files, and AI context.</p>
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="text-xs font-medium text-muted-foreground block mb-1">Project Name</label>
+            <label className="text-xs font-semibold text-muted-foreground block mb-1">Project Name</label>
             <input
               value={name}
               onChange={e => setName(e.target.value)}
@@ -994,7 +1003,7 @@ function CreateSpaceView() {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-muted-foreground block mb-1">Project Description</label>
+            <label className="text-xs font-semibold text-muted-foreground block mb-1">Project Description</label>
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
@@ -1006,7 +1015,7 @@ function CreateSpaceView() {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-muted-foreground block mb-1">Project Context <span className="text-muted-foreground/60">(optional)</span></label>
+            <label className="text-xs font-semibold text-muted-foreground block mb-1">Project Context <span className="text-muted-foreground/60">(optional)</span></label>
             <textarea
               value={projectContext}
               onChange={e => setProjectContext(e.target.value)}
@@ -1018,19 +1027,19 @@ function CreateSpaceView() {
             <button
               type="button"
               onClick={() => setShowContextExamples(!showContextExamples)}
-              className="text-[11px] text-primary hover:underline mt-1.5 flex items-center gap-1"
+              className="text-xs text-primary hover:underline mt-1.5 flex items-center gap-1 font-medium"
             >
               {showContextExamples ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
               See examples
             </button>
             {showContextExamples && (
-              <div className="mt-2 p-3 rounded-md bg-secondary/30 border border-border text-[11px] text-muted-foreground space-y-3">
+              <div className="mt-2 p-3 rounded-md bg-secondary/30 border border-border text-xs text-muted-foreground space-y-3 animate-fade-in">
                 <div>
-                  <p className="font-medium text-foreground/80 mb-1">Client project</p>
+                  <p className="font-semibold text-foreground/80 mb-1">Client project</p>
                   <pre className="whitespace-pre-wrap font-mono text-[10px] leading-relaxed">{'Client:\nIndustry:\nGoal:\nNotes:'}</pre>
                 </div>
                 <div className="border-t border-border pt-2">
-                  <p className="font-medium text-foreground/80 mb-1">Task or automation workspace</p>
+                  <p className="font-semibold text-foreground/80 mb-1">Task or automation workspace</p>
                   <pre className="whitespace-pre-wrap font-mono text-[10px] leading-relaxed">{'Task:\nGoal:\nWorkflow:\nNotes:'}</pre>
                 </div>
               </div>
@@ -1060,9 +1069,9 @@ function CreateSpaceView() {
           </div>
 
           {shareable && (
-            <div className="space-y-4 p-4 rounded-lg border border-border bg-secondary/20">
+            <div className="space-y-4 p-4 rounded-lg border border-border bg-secondary/20 animate-fade-in">
               <div>
-                <div className="text-xs font-medium text-foreground mb-1.5">Share via Link</div>
+                <div className="text-xs font-semibold text-foreground mb-1.5">Share via Link</div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 px-2.5 py-1.5 bg-secondary/50 border border-border rounded-md text-xs text-muted-foreground font-mono truncate">
                     https://argo.app/project/new-project
@@ -1081,7 +1090,7 @@ function CreateSpaceView() {
               <div className="border-t border-border" />
 
               <div>
-                <div className="text-xs font-medium text-foreground mb-2">Share with Members</div>
+                <div className="text-xs font-semibold text-foreground mb-2">Share with Members</div>
                 <div className="flex items-center gap-2 px-2.5 py-1.5 bg-background border border-border rounded-md mb-2">
                   <Search className="w-3 h-3 text-muted-foreground shrink-0" />
                   <input
@@ -1111,9 +1120,9 @@ function CreateSpaceView() {
             onClick={handleCreate}
             disabled={!name.trim()}
             className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              "px-4 py-2 rounded-lg text-sm font-semibold transition-colors",
               name.trim()
-                ? "bg-foreground text-background hover:opacity-90"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
                 : "bg-secondary text-muted-foreground cursor-not-allowed"
             )}
           >
@@ -1144,6 +1153,7 @@ function ChatView() {
   const [feedbackState, setFeedbackState] = useState<Record<string, 'up' | 'down' | null>>({});
   const [feedbackComment, setFeedbackComment] = useState<Record<string, string>>({});
   const [showFeedbackInput, setShowFeedbackInput] = useState<string | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -1153,9 +1163,14 @@ function ChatView() {
 
   const handleSend = () => {
     if (!input.trim() || isTyping) return;
-    sendMessage(input.trim());
-    setInput('');
-    if (inputRef.current) inputRef.current.style.height = 'auto';
+    setSendError(null);
+    try {
+      sendMessage(input.trim());
+      setInput('');
+      if (inputRef.current) inputRef.current.style.height = 'auto';
+    } catch {
+      setSendError('Failed to send message. Please try again.');
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -1178,47 +1193,80 @@ function ChatView() {
     setShowFeedbackInput(msgId);
   };
 
+  const handleCapabilityClick = (capName: string) => {
+    const prompts: Record<string, string> = {
+      'General Assistance': 'Help me with a task',
+      'Generate Proposal Outline': 'Generate a proposal outline for Client X in retail analytics',
+      'Draft SOW': 'Draft a statement of work for an analytics platform implementation',
+      'Create Executive Summary': 'Create an executive summary for our latest engagement',
+      'Generate Company Comparison': 'Compare Shopify, BigCommerce, and WooCommerce',
+    };
+    setInput(prompts[capName] || `Help me with: ${capName}`);
+    inputRef.current?.focus();
+  };
+
+  // Capability icons
+  const capabilityIcons: Record<string, typeof FileSignature> = {
+    'General Assistance': Bot,
+    'Generate Proposal Outline': FileSignature,
+    'Draft SOW': ScrollText,
+    'Create Executive Summary': FileText,
+    'Generate Company Comparison': Table2,
+  };
+
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
-      {/* Project Context Header - only show when chat belongs to a non-default project */}
+      {/* Project Context Header */}
       {activeChat && activeSpace && !activeSpace.isDefault && (
         <div className="border-b border-border px-4 py-3">
           <div className="max-w-3xl mx-auto">
             <div className="text-xs text-muted-foreground mb-0.5">
               Project: {activeSpace.name} <span className="mx-1">•</span> <span className="text-muted-foreground">{activeSpace.visibility === 'shared' ? 'Shared' : 'Private'}</span>
             </div>
-            <div className="text-sm font-medium text-foreground">{activeChat.name}</div>
+            <div className="text-sm font-semibold text-foreground">{activeChat.name}</div>
           </div>
         </div>
       )}
       {/* Messages */}
       <div className="flex-1 overflow-y-auto argo-scrollbar">
         <div className="max-w-3xl mx-auto px-4 py-6">
+          {/* ═══ Welcome Empty State ═══ */}
           {(!activeChat || activeChat.messages.length === 0) && !isTyping && (
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <div className="text-center max-w-md">
-                <h2 className="text-2xl font-semibold text-foreground mb-1">Hello, Alex.</h2>
-                <p className="text-sm text-muted-foreground mb-6">What would you like to work on today?</p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {selectedAgent?.capabilities.map(c => (
-                    <span key={c.id} className="px-3 py-1.5 rounded-full border border-border text-xs text-secondary-foreground hover:bg-accent cursor-default transition-colors">{c.name}</span>
-                  ))}
+            <div className="flex items-center justify-center min-h-[60vh] animate-fade-in">
+              <div className="text-center max-w-lg">
+                <h2 className="text-2xl font-bold text-foreground mb-1">Hello, Alex.</h2>
+                <p className="text-sm text-muted-foreground mb-8">What would you like to work on today?</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedAgent?.capabilities.map(c => {
+                    const IconComp = capabilityIcons[c.name] || Bot;
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => handleCapabilityClick(c.name)}
+                        className="p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-accent/50 text-left transition-all group"
+                      >
+                        <IconComp className="w-5 h-5 text-primary mb-2 group-hover:scale-110 transition-transform" />
+                        <div className="text-sm font-semibold text-foreground">{c.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{c.description}</div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           )}
 
-          {activeChat?.messages.map(msg => (
-            <div key={msg.id} className="mb-6">
+          {activeChat?.messages.map((msg, idx) => (
+            <div key={msg.id} className="mb-6 animate-fade-in" style={{ animationDelay: `${Math.min(idx * 50, 300)}ms` }}>
               <div className="flex gap-3">
                 <div className={cn("w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5", msg.role === 'user' ? "bg-foreground" : "bg-secondary border border-border")}>
-                  {msg.role === 'user' ? <User className="w-3.5 h-3.5 text-background" /> : <Bot className="w-3.5 h-3.5 text-foreground" />}
+                  {msg.role === 'user' ? <User className="w-3.5 h-3.5 text-background" /> : <Bot className="w-3.5 h-3.5 text-primary" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-medium text-foreground mb-1">{msg.role === 'user' ? 'You' : msg.agentName || 'Argo'}</div>
+                  <div className="text-xs font-bold text-foreground mb-1">{msg.role === 'user' ? 'You' : msg.agentName || 'Argo'}</div>
                   <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                     {msg.content.split(/(\*\*.*?\*\*|\*.*?\*)/).map((part, i) => {
-                      if (part.startsWith('**') && part.endsWith('**')) return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+                      if (part.startsWith('**') && part.endsWith('**')) return <strong key={i} className="font-bold">{part.slice(2, -2)}</strong>;
                       if (part.startsWith('*') && part.endsWith('*')) return <em key={i} className="text-muted-foreground">{part.slice(1, -1)}</em>;
                       return <span key={i}>{part}</span>;
                     })}
@@ -1229,11 +1277,11 @@ function ChatView() {
                     const artName = linkedArtifact?.name || 'Artifact';
                     const artType = linkedArtifact ? (artTypeLabels[linkedArtifact.artifactType] || linkedArtifact.artifactType) : '';
                     return (
-                      <button onClick={() => { setActiveArtifactId(msg.artifactId!); setRightPanelView('artifact'); }} className="flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg border border-border text-xs text-foreground hover:bg-accent transition-colors">
-                        <FileText className="w-3 h-3 shrink-0" />
-                        <span className="truncate">{artName}</span>
+                      <button onClick={() => { setActiveArtifactId(msg.artifactId!); setRightPanelView('artifact'); }} className="flex items-center gap-1.5 mt-3 px-3 py-2 rounded-lg border border-primary/30 bg-primary/5 text-xs text-foreground hover:bg-primary/10 transition-colors group">
+                        <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="truncate font-medium">{artName}</span>
                         {artType && <span className="text-muted-foreground shrink-0">({artType})</span>}
-                        <span className="shrink-0">→</span>
+                        <ChevronRight className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" />
                       </button>
                     );
                   })()}
@@ -1244,7 +1292,7 @@ function ChatView() {
                           onClick={() => handleThumbsUp(msg.id)}
                           className={cn(
                             "p-1 rounded hover:bg-accent transition-colors",
-                            feedbackState[msg.id] === 'up' ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                            feedbackState[msg.id] === 'up' ? "text-success" : "text-muted-foreground hover:text-foreground"
                           )}
                           title="Good response"
                         >
@@ -1254,7 +1302,7 @@ function ChatView() {
                           onClick={() => handleThumbsDown(msg.id)}
                           className={cn(
                             "p-1 rounded hover:bg-accent transition-colors",
-                            feedbackState[msg.id] === 'down' ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                            feedbackState[msg.id] === 'down' ? "text-destructive" : "text-muted-foreground hover:text-foreground"
                           )}
                           title="Poor response"
                         >
@@ -1262,7 +1310,7 @@ function ChatView() {
                         </button>
                       </div>
                       {showFeedbackInput === msg.id && feedbackState[msg.id] === 'down' && (
-                        <div className="mt-2 flex gap-2 max-w-md">
+                        <div className="mt-2 flex gap-2 max-w-md animate-fade-in">
                           <input
                             value={feedbackComment[msg.id] || ''}
                             onChange={e => setFeedbackComment(prev => ({ ...prev, [msg.id]: e.target.value }))}
@@ -1271,7 +1319,7 @@ function ChatView() {
                           />
                           <button
                             onClick={() => setShowFeedbackInput(null)}
-                            className="px-2.5 py-1.5 rounded-md bg-foreground text-background text-xs font-medium hover:opacity-90"
+                            className="px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90"
                           >
                             Submit
                           </button>
@@ -1285,13 +1333,13 @@ function ChatView() {
           ))}
 
           {isTyping && (
-            <div className="mb-6">
+            <div className="mb-6 animate-fade-in">
               <div className="flex gap-3">
                 <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-secondary border border-border">
-                  <Bot className="w-3.5 h-3.5 text-foreground" />
+                  <Bot className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-xs font-medium text-foreground mb-1">{selectedAgent?.name}</div>
+                  <div className="text-xs font-bold text-foreground mb-1">{selectedAgent?.name}</div>
                   <div className="flex items-center gap-1.5 py-1">
                     <div className="typing-dot" />
                     <div className="typing-dot" />
@@ -1305,30 +1353,46 @@ function ChatView() {
         </div>
       </div>
 
+      {/* Error state */}
+      {sendError && (
+        <div className="px-4 animate-fade-in">
+          <div className="max-w-3xl mx-auto flex items-center gap-2 px-3 py-2 rounded-lg bg-destructive/10 border border-destructive/20 text-xs text-destructive">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+            <span>{sendError}</span>
+            <button onClick={() => setSendError(null)} className="ml-auto p-0.5 rounded hover:bg-destructive/20 transition-colors">
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Input */}
       <div className="border-t border-border px-4 py-3">
         <div className="max-w-3xl mx-auto">
-          <div className="flex items-end gap-2 bg-secondary/50 border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring transition-all">
-            <div className="relative">
-              <button onClick={() => setShowPlus(!showPlus)} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
-                <Plus className="w-4 h-4" />
-              </button>
-              {showPlus && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowPlus(false)} />
-                  <div className="absolute bottom-full left-0 mb-2 w-44 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
-                    {[{ icon: Globe, label: 'Web Search' }, { icon: Brain, label: 'Reasoning' }, { icon: Paperclip, label: 'Attach File' }].map(item => (
-                      <button key={item.label} onClick={() => setShowPlus(false)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors">
-                        <item.icon className="w-3.5 h-3.5 text-muted-foreground" />
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+          <div className="flex items-end gap-2 bg-secondary/50 border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all">
+            <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+                  <Plus className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start" className="w-44">
+                <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                  <Globe className="w-3.5 h-3.5 mr-2" />
+                  Web Search
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                  <Brain className="w-3.5 h-3.5 mr-2" />
+                  Reasoning
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                  <Paperclip className="w-3.5 h-3.5 mr-2" />
+                  Attach File
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <textarea ref={inputRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown} placeholder="Ask anything…" rows={1} className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5" />
-            <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-foreground text-background hover:opacity-90" : "text-muted-foreground")}>
+            <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}>
               <Send className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -1344,7 +1408,6 @@ function WorkspaceDashboard() {
   const { spaces, openSpaceWorkspace, setCenterView } = useArgo();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'private' | 'shared' | 'owned'>('all');
-  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
 
@@ -1371,14 +1434,14 @@ function WorkspaceDashboard() {
 
   const renderRow = (s: typeof spaces[0]) => (
     <tr key={s.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-      <td className="px-4 py-3 font-medium text-foreground">
+      <td className="px-4 py-3 font-semibold text-foreground">
         {s.name}
         {s.isDefault && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">Default</span>}
       </td>
       <td className="px-4 py-3 text-muted-foreground truncate max-w-xs">{s.description || '—'}</td>
       <td className="px-4 py-3 text-muted-foreground">{s.owner}</td>
       <td className="px-4 py-3">
-        <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", s.visibility === 'shared' ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground")}>
+        <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", s.visibility === 'shared' ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground")}>
           {s.visibility === 'shared' ? 'Shared' : 'Private'}
         </span>
       </td>
@@ -1395,9 +1458,9 @@ function WorkspaceDashboard() {
   );
 
   return (
-    <div className="w-full p-6 space-y-5">
+    <div className="w-full p-6 space-y-5 animate-fade-in">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">Projects</h2>
+        <h2 className="text-lg font-bold text-foreground">Projects</h2>
         <p className="text-sm text-muted-foreground mt-1">All projects assigned to you.</p>
       </div>
 
@@ -1411,35 +1474,23 @@ function WorkspaceDashboard() {
             className="flex-1 text-sm bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
         </div>
-        {/* Filter Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-          >
-            {filterLabels[filter]}
-            <ChevronDown className="w-3.5 h-3.5" />
-          </button>
-          {showFilterDropdown && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setShowFilterDropdown(false)} />
-              <div className="absolute right-0 top-full mt-1 w-44 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
-                {(['all', 'private', 'shared', 'owned'] as const).map(f => (
-                  <button
-                    key={f}
-                    onClick={() => { setFilter(f); setShowFilterDropdown(false); setPage(1); }}
-                    className={cn("w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors", filter === f && "bg-accent font-medium text-foreground")}
-                  >
-                    {filterLabels[f]}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        {/* Filter Dropdown - Radix */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+              {filterLabels[filter]}
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {(['all', 'private', 'shared', 'owned'] as const).map(f => (
+              <DropdownMenuItem key={f} onClick={() => { setFilter(f); setPage(1); }} className={cn(filter === f && "bg-accent font-semibold")}>{filterLabels[f]}</DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         <button
           onClick={() => setCenterView('new-space')}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           Create Project
@@ -1450,11 +1501,11 @@ function WorkspaceDashboard() {
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10">
             <tr className="bg-secondary border-b border-border">
-              <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider">Project Name</th>
-              <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider">Description</th>
-              <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-32">Owner</th>
-              <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-28">Visibility</th>
-              <th className="text-left px-4 py-2.5 font-medium text-muted-foreground text-xs uppercase tracking-wider w-20">Actions</th>
+              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Project Name</th>
+              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Description</th>
+              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-32">Owner</th>
+              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-28">Visibility</th>
+              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-20">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -1462,7 +1513,8 @@ function WorkspaceDashboard() {
               <tr>
                 <td colSpan={5} className="text-center py-16 text-muted-foreground">
                   <FolderOpen className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
-                  No projects found.
+                  <p className="font-medium">No projects found.</p>
+                  <p className="text-xs mt-1">Create your first project to get started.</p>
                 </td>
               </tr>
             ) : (
@@ -1482,7 +1534,7 @@ function WorkspaceDashboard() {
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-2.5 py-1 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors"
+              className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors"
             >
               Previous
             </button>
@@ -1490,7 +1542,7 @@ function WorkspaceDashboard() {
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className={cn("w-7 h-7 rounded text-xs font-medium transition-colors", p === page ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground hover:bg-accent")}
+                className={cn("w-7 h-7 rounded text-xs font-semibold transition-colors", p === page ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")}
               >
                 {p}
               </button>
@@ -1498,7 +1550,7 @@ function WorkspaceDashboard() {
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-2.5 py-1 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors"
+              className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors"
             >
               Next
             </button>

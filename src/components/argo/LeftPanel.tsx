@@ -8,7 +8,16 @@ import {
 import { useArgo } from '@/context/ArgoContext';
 import { cn } from '@/lib/utils';
 import argoBrainIcon from '@/assets/argo-brain-icon.png';
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 
 const MOCK_USER = { firstName: 'Pranav', lastName: 'Nagrani', email: 'pranav@cybage.com' };
@@ -19,84 +28,60 @@ function maskEmail(email: string): string {
 }
 
 function UserProfileSection({ onOpenConfig }: { onOpenConfig: (tab: 'agents' | 'prompts' | 'groups') => void }) {
-  const [showMenu, setShowMenu] = useState(false);
-  const [showConfigSub, setShowConfigSub] = useState(false);
   const initials = `${MOCK_USER.firstName[0]}${MOCK_USER.lastName[0]}`;
 
   return (
-    <div className="px-2 py-2 relative">
-      <button
-        onClick={() => { setShowMenu(!showMenu); setShowConfigSub(false); }}
-        className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-accent/60 transition-colors"
-      >
-        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-          <span className="text-xs font-semibold text-primary-foreground">{initials}</span>
-        </div>
-        <span className="text-sm font-medium text-foreground truncate">{MOCK_USER.firstName} {MOCK_USER.lastName}</span>
-      </button>
-      {showMenu && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => { setShowMenu(false); setShowConfigSub(false); }} />
-          <div className="absolute bottom-full left-2 right-2 mb-1 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
-            <div className="px-3 py-2.5 border-b border-border">
-              <div className="text-sm font-medium text-foreground">{MOCK_USER.firstName} {MOCK_USER.lastName}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">{maskEmail(MOCK_USER.email)}</div>
+    <div className="px-2 py-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-accent/60 transition-colors focus:outline-none">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+              <span className="text-xs font-bold text-primary-foreground">{initials}</span>
             </div>
-            <button
-              disabled
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground cursor-not-allowed opacity-50"
-            >
-              <Settings className="w-3.5 h-3.5" />
-              Settings
-            </button>
-            <div>
-              <button
-                onClick={() => setShowConfigSub(!showConfigSub)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-              >
-                <Bot className="w-3.5 h-3.5" />
-                <span className="flex-1 text-left">Configurations</span>
-                {showConfigSub ? <ChevronDown className="w-3 h-3 text-muted-foreground" /> : <ChevronRight className="w-3 h-3 text-muted-foreground" />}
-              </button>
-              {showConfigSub && (
-                <div className="border-t border-border/50">
-                  <button
-                    onClick={() => { setShowMenu(false); setShowConfigSub(false); onOpenConfig('agents'); }}
-                    className="w-full flex items-center gap-2 px-3 pl-9 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                  >
-                    <Bot className="w-3.5 h-3.5" />
-                    Agent Configuration
-                  </button>
-                  <button
-                    onClick={() => { setShowMenu(false); setShowConfigSub(false); onOpenConfig('prompts'); }}
-                    className="w-full flex items-center gap-2 px-3 pl-9 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                  >
-                    <BookOpen className="w-3.5 h-3.5" />
-                    Prompt Management
-                  </button>
-                  <button
-                    onClick={() => { setShowMenu(false); setShowConfigSub(false); onOpenConfig('groups'); }}
-                    className="w-full flex items-center gap-2 px-3 pl-9 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                  >
-                    <Users className="w-3.5 h-3.5" />
-                    Group Permissions
-                  </button>
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => setShowMenu(false)}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Logout
-            </button>
+            <span className="text-sm font-medium text-foreground truncate">{MOCK_USER.firstName} {MOCK_USER.lastName}</span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="top" align="start" className="w-56">
+          <div className="px-3 py-2.5">
+            <div className="text-sm font-semibold text-foreground">{MOCK_USER.firstName} {MOCK_USER.lastName}</div>
+            <div className="text-xs text-muted-foreground mt-0.5">{maskEmail(MOCK_USER.email)}</div>
           </div>
-        </>
-      )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem disabled className="opacity-50">
+            <Settings className="w-3.5 h-3.5 mr-2" />
+            Settings
+          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Bot className="w-3.5 h-3.5 mr-2" />
+              Configurations
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={() => onOpenConfig('agents')}>
+                <Bot className="w-3.5 h-3.5 mr-2" />
+                Agent Configuration
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onOpenConfig('prompts')}>
+                <BookOpen className="w-3.5 h-3.5 mr-2" />
+                Prompt Management
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onOpenConfig('groups')}>
+                <Users className="w-3.5 h-3.5 mr-2" />
+                Group Permissions
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <LogOut className="w-3.5 h-3.5 mr-2" />
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
+
 export function LeftPanel() {
   const {
     spaces, activeSpaceId, chats, activeChatId, setActiveChatId,
@@ -109,19 +94,16 @@ export function LeftPanel() {
   const [searchQuery, setSearchQuery] = useState('');
   const [renamingChatId, setRenamingChatId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
-  const [chatMenuId, setChatMenuId] = useState<string | null>(null);
 
   const generalChatSpace = spaces.find(s => s.isDefault);
   const projectSpaces = spaces.filter(s => !s.isDefault);
 
   const generalChatChats = generalChatSpace ? chats.filter(c => c.spaceId === generalChatSpace.id) : [];
 
-  // Recent projects: last 5 by createdAt
   const recentProjects = [...projectSpaces]
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     .slice(0, 5);
 
-  // Search across project names and chat titles
   const searchResults = searchQuery ? (() => {
     const q = searchQuery.toLowerCase();
     const matchedProjects = projectSpaces.filter(s => s.name.toLowerCase().includes(q));
@@ -146,7 +128,6 @@ export function LeftPanel() {
     setRightPanelView('empty');
   };
 
-  // Collapsed sidebar
   if (sidebarCollapsed) {
     return (
       <div className="h-screen flex flex-col items-center bg-sidebar panel-border-right py-3 gap-1 w-full">
@@ -165,7 +146,7 @@ export function LeftPanel() {
         </button>
         <div className="flex-1" />
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center cursor-pointer" title={`${MOCK_USER.firstName} ${MOCK_USER.lastName}`}>
-          <span className="text-[10px] font-semibold text-primary-foreground">{MOCK_USER.firstName[0]}{MOCK_USER.lastName[0]}</span>
+          <span className="text-[10px] font-bold text-primary-foreground">{MOCK_USER.firstName[0]}{MOCK_USER.lastName[0]}</span>
         </div>
       </div>
     );
@@ -177,7 +158,7 @@ export function LeftPanel() {
       <div className="px-4 py-3.5 border-b border-sidebar-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src={argoBrainIcon} alt="ARGO" className="w-6 h-6" />
-          <span className="text-sm font-bold text-foreground tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>ARGO</span>
+          <span className="text-sm font-serif font-bold text-foreground tracking-wide">ARGO</span>
         </div>
         <button onClick={() => setSidebarCollapsed(true)} className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Collapse sidebar">
           <PanelLeftClose className="w-4 h-4" />
@@ -188,7 +169,7 @@ export function LeftPanel() {
       <div className="px-3 pt-3 pb-2 space-y-1.5">
         <button
           onClick={handleNewChat}
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           New Chat
@@ -202,7 +183,7 @@ export function LeftPanel() {
       <div className="flex-1 overflow-y-auto argo-scrollbar">
         <div className="px-2 pt-2.5 pb-1 space-y-0.5">
           {/* Search */}
-          <div className="px-1 pb-1.5">
+          <div className="px-1 pb-2">
             <div className="flex items-center gap-2 px-2.5 py-1.5 bg-background border border-border rounded-md">
               <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
               <input
@@ -218,7 +199,7 @@ export function LeftPanel() {
           {searchQuery && searchResults ? (
             <div className="px-1 space-y-0.5">
               {searchResults.projects.length === 0 && searchResults.chats.length === 0 ? (
-                <div className="text-[11px] text-muted-foreground py-2 px-3">No results found.</div>
+                <div className="text-xs text-muted-foreground py-3 px-3 text-center">No results found.</div>
               ) : (
                 <>
                   {searchResults.projects.map(project => (
@@ -274,7 +255,7 @@ export function LeftPanel() {
                 className={cn(
                   "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
                   centerView === 'projects'
-                    ? "bg-accent text-foreground font-medium"
+                    ? "bg-accent text-foreground font-semibold"
                     : "text-sidebar-foreground hover:bg-accent/60"
                 )}
               >
@@ -292,7 +273,7 @@ export function LeftPanel() {
                 className={cn(
                   "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
                   centerView === 'artifacts-table'
-                    ? "bg-accent text-foreground font-medium"
+                    ? "bg-accent text-foreground font-semibold"
                     : "text-sidebar-foreground hover:bg-accent/60"
                 )}
               >
@@ -301,16 +282,16 @@ export function LeftPanel() {
               </button>
 
               {/* Zone divider */}
-              <div className="mx-1 my-1.5 border-t border-border" />
+              <div className="mx-1 my-2 border-t border-border" />
 
               {/* ── Recent Projects ── */}
               <div className="mb-1">
-                <div className="px-2 py-1.5 text-[11px] font-semibold text-foreground/70 uppercase tracking-wider">
+                <div className="px-2 py-2 text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
                   Recent Projects
                 </div>
                 <div className="space-y-0.5">
                   {recentProjects.length === 0 ? (
-                    <div className="text-[11px] text-muted-foreground py-2 px-3">No projects yet.</div>
+                    <div className="text-xs text-muted-foreground py-3 px-3 text-center">No projects yet.</div>
                   ) : (
                     recentProjects.map(project => {
                       const projectChats = chats.filter(c => c.spaceId === project.id && c.messages.length > 0);
@@ -323,7 +304,7 @@ export function LeftPanel() {
                               className={cn(
                                 "flex-1 flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-left",
                                 isActiveProject
-                                  ? "bg-accent text-foreground font-medium"
+                                  ? "bg-accent text-foreground font-semibold"
                                   : "text-sidebar-foreground hover:bg-accent/60"
                               )}
                             >
@@ -379,34 +360,24 @@ export function LeftPanel() {
                                       >
                                         <span className="truncate">{c.name}</span>
                                       </button>
-                                      <div className="relative">
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setChatMenuId(chatMenuId === c.id ? null : c.id);
-                                          }}
-                                          className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground opacity-0 group-hover/chat:opacity-100 transition-all"
-                                        >
-                                          <MoreHorizontal className="w-3.5 h-3.5" />
-                                        </button>
-                                        {chatMenuId === c.id && (
-                                          <>
-                                            <div className="fixed inset-0 z-10" onClick={() => setChatMenuId(null)} />
-                                            <div className="absolute right-0 top-full mt-1 w-32 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
-                                              <button
-                                                onClick={() => {
-                                                  setRenameValue(c.name);
-                                                  setRenamingChatId(c.id);
-                                                  setChatMenuId(null);
-                                                }}
-                                                className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                                              >
-                                                Rename
-                                              </button>
-                                            </div>
-                                          </>
-                                        )}
-                                      </div>
+                                      <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                          <button
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground opacity-0 group-hover/chat:opacity-100 transition-all"
+                                          >
+                                            <MoreHorizontal className="w-3.5 h-3.5" />
+                                          </button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-32">
+                                          <DropdownMenuItem onClick={() => {
+                                            setRenameValue(c.name);
+                                            setRenamingChatId(c.id);
+                                          }}>
+                                            Rename
+                                          </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                      </DropdownMenu>
                                     </>
                                   )}
                                 </div>
@@ -429,7 +400,7 @@ export function LeftPanel() {
               </div>
 
               {/* Zone divider */}
-              {generalChatSpace && <div className="mx-1 my-1.5 border-t border-border" />}
+              {generalChatSpace && <div className="mx-1 my-2 border-t border-border" />}
 
               {/* ── General Chat Section ── */}
               {generalChatSpace && (
@@ -440,7 +411,7 @@ export function LeftPanel() {
                       className={cn(
                         "flex-1 flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-left",
                         activeSpaceId === generalChatSpace.id && centerView === 'space-workspace'
-                          ? "bg-accent text-foreground font-medium"
+                          ? "bg-accent text-foreground font-semibold"
                           : "text-sidebar-foreground hover:bg-accent/60"
                       )}
                     >
@@ -460,7 +431,7 @@ export function LeftPanel() {
                   </div>
                   <div className="ml-4 space-y-0.5 mt-0.5 border-l border-border/60 pl-2">
                     {generalChatChats.filter(c => c.messages.length > 0).length === 0 && (
-                      <div className="text-[11px] text-muted-foreground py-1 px-2">No chats</div>
+                      <div className="text-xs text-muted-foreground py-1.5 px-2">No chats</div>
                     )}
                     {generalChatChats.filter(c => c.messages.length > 0).slice(0, 5).map(c => (
                       <div key={c.id} className="relative group/chat flex items-center">
@@ -496,34 +467,24 @@ export function LeftPanel() {
                             >
                               <span className="truncate">{c.name}</span>
                             </button>
-                            <div className="relative">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setChatMenuId(chatMenuId === c.id ? null : c.id);
-                                }}
-                                className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground opacity-0 group-hover/chat:opacity-100 transition-all"
-                              >
-                                <MoreHorizontal className="w-3.5 h-3.5" />
-                              </button>
-                              {chatMenuId === c.id && (
-                                <>
-                                  <div className="fixed inset-0 z-10" onClick={() => setChatMenuId(null)} />
-                                  <div className="absolute right-0 top-full mt-1 w-32 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden">
-                                    <button
-                                      onClick={() => {
-                                        setRenameValue(c.name);
-                                        setRenamingChatId(c.id);
-                                        setChatMenuId(null);
-                                      }}
-                                      className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                                    >
-                                      Rename
-                                    </button>
-                                  </div>
-                                </>
-                              )}
-                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground opacity-0 group-hover/chat:opacity-100 transition-all"
+                                >
+                                  <MoreHorizontal className="w-3.5 h-3.5" />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-32">
+                                <DropdownMenuItem onClick={() => {
+                                  setRenameValue(c.name);
+                                  setRenamingChatId(c.id);
+                                }}>
+                                  Rename
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </>
                         )}
                       </div>
