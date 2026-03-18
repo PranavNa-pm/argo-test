@@ -10,7 +10,7 @@ function ArgoLayout() {
   const effectiveWidth = sidebarCollapsed ? 52 : 260;
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background">
+    <div className="flex h-screen w-full overflow-hidden overflow-x-hidden bg-background">
       <div style={{ width: effectiveWidth, minWidth: effectiveWidth }} className="transition-[width,min-width] duration-200">
         <LeftPanel />
       </div>

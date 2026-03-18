@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Send, Plus, Globe, Brain, Paperclip, Bot, User, FileText,
   ChevronDown, Eye, Download, Pencil, Search, MessageSquare,
@@ -115,7 +115,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
     return (
       <div className="w-full p-6 space-y-5 animate-fade-in">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-foreground">Agent Configuration</h2>
+          <h2 className="text-lg font-semibold text-foreground tracking-tight">Agent Configuration</h2>
           {!showAddAgent && !editingAgentId && (
             <button
               onClick={() => { setNewAgent(defaultAgent); setShowAddAgent(true); }}
@@ -127,7 +127,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
           )}
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg max-w-md">
+        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg flex-1">
           <Search className="w-3.5 h-3.5 text-muted-foreground" />
           <input
             value={agentSearch}
@@ -139,7 +139,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
 
         {(showAddAgent || editingAgentId) && (
           <div className="p-5 rounded-lg border border-border bg-secondary/20 space-y-4 max-w-2xl animate-scale-in">
-            <h3 className="text-sm font-bold text-foreground">{editingAgentId ? 'Edit Agent' : 'Create New Agent'}</h3>
+            <h3 className="text-sm font-semibold text-foreground">{editingAgentId ? 'Edit Agent' : 'Create New Agent'}</h3>
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground block mb-1">Agent Name</label>
@@ -305,7 +305,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
       <div className="w-full p-6 space-y-4 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-foreground">Prompt Manager</h2>
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">Prompt Manager</h2>
             <p className="text-sm text-muted-foreground mt-1">Create, edit, and manage your prompt templates with versioning.</p>
           </div>
           {!showNewPrompt && (
@@ -319,7 +319,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
           )}
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg max-w-md">
+        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg flex-1">
           <Search className="w-3.5 h-3.5 text-muted-foreground" />
           <input
             value={promptSearch}
@@ -331,7 +331,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
 
         {showNewPrompt && (
           <div className="p-5 rounded-lg border border-border bg-secondary/20 space-y-4 max-w-2xl animate-scale-in">
-            <h3 className="text-sm font-bold text-foreground">Create New Prompt</h3>
+            <h3 className="text-sm font-semibold text-foreground">Create New Prompt</h3>
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground block mb-1">Prompt Name</label>
@@ -423,7 +423,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
       <div className="w-full p-6 space-y-4 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-foreground">Group Permissions</h2>
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">Group Permissions</h2>
             <p className="text-sm text-muted-foreground mt-1">Configure access rights for each group.</p>
           </div>
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">
@@ -452,13 +452,13 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                 const mapped = usersMapped[g.name] || { count: 0, users: [] };
                 return (
                 <tr key={i} className="border-b border-border last:border-0 align-top">
-                  <td className="px-4 py-3 font-semibold text-foreground">{g.name}</td>
+                  <td className="px-4 py-3 font-medium text-foreground">{g.name}</td>
                   <td className="px-4 py-3">
                     <UsersMappedCell count={mapped.count} users={mapped.users} />
                   </td>
                   <td className="px-4 py-3 space-y-2.5">
                     <div>
-                      <span className="text-xs font-bold text-foreground">Assigned Agents:</span>
+                      <span className="text-xs font-semibold text-foreground">Assigned Agents:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {g.agents.map(a => (
                           <span key={a} className="px-2 py-0.5 rounded-full bg-secondary text-xs text-secondary-foreground">{a}</span>
@@ -467,7 +467,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                     </div>
                     {g.canShare && (
                       <div>
-                        <span className="text-xs font-bold text-foreground">Project Sharing:</span>
+                        <span className="text-xs font-semibold text-foreground">Project Sharing:</span>
                         <div className="mt-1">
                           <span className="px-2 py-0.5 rounded-full bg-accent text-[10px] font-semibold text-accent-foreground">Can Share</span>
                         </div>
@@ -475,7 +475,7 @@ function ConfigView({ tab }: { tab: AdminTab }) {
                     )}
                     {g.rights.length > 0 && (
                       <div>
-                        <span className="text-xs font-bold text-foreground">Management Rights:</span>
+                        <span className="text-xs font-semibold text-foreground">Management Rights:</span>
                         <ul className="mt-1 space-y-0.5">
                           {g.rights.map(r => (
                             <li key={r} className="text-xs text-muted-foreground">{r}</li>
@@ -513,11 +513,11 @@ function ConfigView({ tab }: { tab: AdminTab }) {
 function ArtifactsTable() {
   const { allArtifacts, spaces, chats, setActiveArtifactId, setRightPanelView, navigateToChat, renameArtifact } = useArgo();
   const [artifactSearch, setArtifactSearch] = useState('');
+  const [sortField, setSortField] = useState<'name' | 'source' | 'type' | 'date'>('date');
   const [sortAsc, setSortAsc] = useState(false);
   const [contextFilter, setContextFilter] = useState<'all' | 'general-chat' | 'projects'>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [page, setPage] = useState(1);
-  const PAGE_SIZE = 10;
+  const [displayCount, setDisplayCount] = useState(20);
+  const scrollSentinelRef = useRef<HTMLDivElement>(null);
 
   const handleView = (artifactId: string) => {
     setActiveArtifactId(artifactId);
@@ -528,7 +528,6 @@ function ArtifactsTable() {
     navigateToChat(chatId);
   };
 
-  const artifactTypes = Array.from(new Set(allArtifacts.map(a => a.artifactType)));
   const typeLabels: Record<string, string> = {
     'markdown': 'Markdown',
     'html': 'HTML',
@@ -548,143 +547,120 @@ function ArtifactsTable() {
       }
       return true;
     })
-    .filter(a => typeFilter === 'all' || a.artifactType === typeFilter)
     .sort((a, b) => {
       const mul = sortAsc ? 1 : -1;
+      if (sortField === 'name') return mul * a.name.localeCompare(b.name);
+      if (sortField === 'type') return mul * a.artifactType.localeCompare(b.artifactType);
+      if (sortField === 'source') {
+        const sa = spaces.find(s => s.id === a.spaceId)?.name || '';
+        const sb = spaces.find(s => s.id === b.spaceId)?.name || '';
+        return mul * sa.localeCompare(sb);
+      }
       return mul * (a.timestamp.getTime() - b.timestamp.getTime());
     });
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated = filtered.slice(0, displayCount);
+
+  // Infinite scroll
+  useEffect(() => {
+    if (!scrollSentinelRef.current || filtered.length <= displayCount) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) setDisplayCount(prev => prev + 20);
+    }, { threshold: 0.1 });
+    observer.observe(scrollSentinelRef.current);
+    return () => observer.disconnect();
+  }, [filtered.length, displayCount]);
 
   return (
-    <div className="w-full p-6 space-y-4 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-foreground">Artifact Library</h2>
-      </div>
-
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg max-w-md flex-1">
-          <Search className="w-3.5 h-3.5 text-muted-foreground" />
-          <input
-            value={artifactSearch}
-            onChange={e => { setArtifactSearch(e.target.value); setPage(1); }}
-            placeholder="Search by title..."
-            className="flex-1 text-sm bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
-          />
+    <div className="w-full p-6 animate-fade-in">
+      <div className="max-w-4xl mx-auto space-y-5">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground tracking-tight">Artifacts ({filtered.length})</h2>
+          <p className="text-sm text-muted-foreground mt-1">All artifacts across your projects.</p>
         </div>
 
-        {/* Context Filter - Radix */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
-              {contextFilter === 'all' ? 'All Projects' : contextFilter === 'general-chat' ? 'General Chat' : 'Projects'}
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {[{ key: 'all', label: 'All Projects' }, { key: 'general-chat', label: 'General Chat' }, { key: 'projects', label: 'Projects' }].map(f => (
-              <DropdownMenuItem key={f.key} onClick={() => { setContextFilter(f.key as any); setPage(1); }} className={cn(contextFilter === f.key && "bg-accent font-semibold")}>{f.label}</DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Type Filter - Radix */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
-              {typeFilter === 'all' ? 'All Types' : typeLabels[typeFilter] || typeFilter}
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => { setTypeFilter('all'); setPage(1); }} className={cn(typeFilter === 'all' && "bg-accent font-semibold")}>All Types</DropdownMenuItem>
-            {artifactTypes.map(t => (
-              <DropdownMenuItem key={t} onClick={() => { setTypeFilter(t); setPage(1); }} className={cn(typeFilter === t && "bg-accent font-semibold")}>{typeLabels[t] || t}</DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <button
-          onClick={() => setSortAsc(!sortAsc)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-        >
-          Date {sortAsc ? '↑' : '↓'}
-        </button>
-      </div>
-
-      <span className="text-sm text-muted-foreground">{filtered.length} artifact{filtered.length !== 1 ? 's' : ''} found</span>
-
-      {filtered.length === 0 ? (
-        <div className="text-center py-16 animate-fade-in">
-          <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm font-medium text-muted-foreground">No artifacts found.</p>
-          <p className="text-xs text-muted-foreground mt-1">Generate artifacts by chatting with an agent.</p>
-        </div>
-      ) : (
-        <>
-          <div className="border border-border rounded-lg overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 z-10">
-                <tr className="bg-secondary border-b border-border">
-                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Artifact Title</th>
-                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Project</th>
-                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-32">Type</th>
-                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-20">Version</th>
-                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-28">Date Created</th>
-                  <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-28">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginated.map(a => {
-                  const space = spaces.find(s => s.id === a.spaceId);
-                  const chat = chats.find(c => c.id === a.chatId);
-                  const dateStr = a.timestamp.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-                  const titleDisplay = `${typeLabels[a.artifactType] || a.artifactType}: ${a.name} – ${dateStr}`;
-                  return (
-                    <tr key={a.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-                      <td className="px-4 py-3">
-                        <button onClick={() => handleView(a.id)} className="text-left font-semibold text-foreground hover:text-primary transition-colors">
-                          {titleDisplay}
-                        </button>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{space?.isDefault ? 'General Chat' : space?.name || '—'}</td>
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-0.5 rounded-full bg-secondary text-xs text-secondary-foreground">{typeLabels[a.artifactType] || a.artifactType}</span>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-muted-foreground">v{a.version}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{dateStr}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1">
-                          <button onClick={() => handleView(a.id)} className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="View"><Eye className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => handleOpenInChat(a.chatId)} className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Open in Chat"><MessageSquare className="w-3.5 h-3.5" /></button>
-                          <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Download"><Download className="w-3.5 h-3.5" /></button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg flex-1">
+            <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <input
+              value={artifactSearch}
+              onChange={e => { setArtifactSearch(e.target.value); setDisplayCount(20); }}
+              placeholder="Search artifacts..."
+              className="flex-1 text-sm bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
           </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-2">
-              <p className="text-xs text-muted-foreground">
-                Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} artifacts
-              </p>
-              <div className="flex items-center gap-1">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Previous</button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                  <button key={p} onClick={() => setPage(p)} className={cn("w-7 h-7 rounded text-xs font-semibold transition-colors", p === page ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")}>{p}</button>
-                ))}
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Next</button>
-              </div>
-            </div>
-          )}
-        </>
-      )}
+          {/* Context Filter - Inline tabs */}
+          <div className="flex items-center gap-1">
+            {([{ key: 'all', label: 'All' }, { key: 'general-chat', label: 'General Chat' }, { key: 'projects', label: 'Projects' }] as const).map(f => (
+              <button key={f.key} onClick={() => { setContextFilter(f.key as any); setDisplayCount(20); }}
+                className={cn("px-3 py-1.5 rounded-lg text-sm transition-colors",
+                  contextFilter === f.key ? "bg-accent text-foreground font-medium" : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                )}>
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Sort headers */}
+        <div className="flex items-center gap-1 px-4">
+          {([
+            { field: 'name' as const, label: 'Name' },
+            { field: 'source' as const, label: 'Source' },
+            { field: 'type' as const, label: 'Type' },
+          ]).map(col => (
+            <button key={col.field}
+              onClick={() => { setSortField(col.field); setSortAsc(sortField === col.field ? !sortAsc : true); }}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors select-none flex items-center gap-1 mr-4">
+              {col.label}
+              {sortField === col.field && <span className="text-foreground">{sortAsc ? '↑' : '↓'}</span>}
+            </button>
+          ))}
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="text-center py-16 animate-fade-in">
+            <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+            <p className="text-sm font-medium text-muted-foreground">No artifacts found.</p>
+            <p className="text-xs text-muted-foreground mt-1">Generate artifacts by chatting with an agent.</p>
+          </div>
+        ) : (
+          <div className="space-y-0.5">
+            {paginated.map(a => {
+              const space = spaces.find(s => s.id === a.spaceId);
+              const chat = chats.find(c => c.id === a.chatId);
+              const spaceName = space?.isDefault ? 'General Chat' : space?.name || '—';
+              const chatName = chat?.name || '—';
+              const dotColor = a.artifactType === 'markdown' ? 'bg-primary' : a.artifactType === 'html' ? 'bg-orange-400' : 'bg-purple-400';
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => handleView(a.id)}
+                  className="w-full flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-accent/50 transition-colors text-left group"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-foreground truncate">{a.name}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5 truncate">{spaceName} <span className="text-muted-foreground/50">›</span> {chatName}</div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("w-2 h-2 rounded-full shrink-0", dotColor)} />
+                      <span className="text-xs text-muted-foreground">{typeLabels[a.artifactType] || a.artifactType}</span>
+                    </div>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span onClick={(e) => { e.stopPropagation(); handleOpenInChat(a.chatId); }} className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer" title="Open in Chat"><MessageSquare className="w-3.5 h-3.5" /></span>
+                      <span onClick={(e) => e.stopPropagation()} className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer" title="Download"><Download className="w-3.5 h-3.5" /></span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+            {/* Infinite scroll sentinel */}
+            {filtered.length > displayCount && <div ref={scrollSentinelRef} className="h-4" />}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -703,9 +679,9 @@ function SpaceWorkspaceView() {
   const spaceArtifacts = artifacts.filter(a => a.spaceId === activeSpaceId);
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState('');
-  const [chatPage, setChatPage] = useState(1);
-  const CHAT_PAGE_SIZE = 10;
+  const [chatDisplayCount, setChatDisplayCount] = useState(20);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const chatSentinelRef = useRef<HTMLDivElement>(null);
   const [shareSearch, setShareSearch] = useState('');
   const isShared = space?.visibility === 'shared';
   const isOwner = space?.owner === 'You';
@@ -721,6 +697,16 @@ function SpaceWorkspaceView() {
     ? shareMembers.filter(m => m.name.toLowerCase().includes(shareSearch.toLowerCase()))
     : shareMembers;
 
+  // Infinite scroll for chats
+  useEffect(() => {
+    if (!chatSentinelRef.current || spaceChats.length <= chatDisplayCount) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) setChatDisplayCount(prev => prev + 20);
+    }, { threshold: 0.1 });
+    observer.observe(chatSentinelRef.current);
+    return () => observer.disconnect();
+  }, [spaceChats.length, chatDisplayCount]);
+
   if (!space) return null;
 
   const handleOpenChat = (chatId: string) => {
@@ -729,13 +715,14 @@ function SpaceWorkspaceView() {
   };
 
   return (
-    <div className="w-full p-6 space-y-6 animate-fade-in">
+    <div className="w-full p-6 animate-fade-in">
+      <div className="max-w-4xl mx-auto space-y-6">
 
       {/* Project Header */}
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <FolderOpen className="w-5 h-5 text-primary" />
+            <FolderOpen className="w-4 h-4 text-primary" />
             {editing ? (
               <input
                 value={editName}
@@ -745,14 +732,14 @@ function SpaceWorkspaceView() {
                   if (e.key === 'Escape') setEditing(false);
                 }}
                 onBlur={() => { renameSpace(activeSpaceId, editName.trim() || space.name); setEditing(false); }}
-                className="text-xl font-bold text-foreground bg-background border border-border rounded-md px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-ring"
+                className="text-lg font-semibold text-foreground bg-background border border-border rounded-md px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-ring"
                 autoFocus
               />
             ) : (
-              <h1 className="text-xl font-bold text-foreground">{space.name}</h1>
+              <h1 className="text-lg font-semibold text-foreground tracking-tight">{space.name}</h1>
             )}
             <span className="text-sm text-muted-foreground">•</span>
-            <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", isShared ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground")}>{isShared ? 'Shared' : 'Private'}</span>
+            {isShared ? <Globe className="w-3.5 h-3.5 text-muted-foreground" /> : <Lock className="w-3.5 h-3.5 text-muted-foreground" />}
             {isOwner && !space.isDefault && (
               <button onClick={() => { setEditName(space.name); setEditing(!editing); }} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Edit project">
                 <Pencil className="w-3.5 h-3.5" />
@@ -808,8 +795,8 @@ function SpaceWorkspaceView() {
                     </div>
                     <div className="border-t border-border" />
                     <div className="text-xs font-semibold text-foreground mb-2">Share with members</div>
-                    <div className="flex items-center gap-2 px-2.5 py-1.5 bg-background border border-border rounded-md mb-2">
-                      <Search className="w-3 h-3 text-muted-foreground shrink-0" />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg mb-2">
+                      <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                       <input
                         value={shareSearch}
                         onChange={e => setShareSearch(e.target.value)}
@@ -854,7 +841,7 @@ function SpaceWorkspaceView() {
         ) : (
           <>
             <div className="space-y-1">
-              {spaceChats.slice((chatPage - 1) * CHAT_PAGE_SIZE, chatPage * CHAT_PAGE_SIZE).map(c => (
+              {spaceChats.slice(0, chatDisplayCount).map(c => (
                 <div key={c.id} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/30 transition-colors cursor-pointer group" onClick={() => handleOpenChat(c.id)}>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-foreground">{c.name}</div>
@@ -866,25 +853,11 @@ function SpaceWorkspaceView() {
                 </div>
               ))}
             </div>
-            {spaceChats.length > CHAT_PAGE_SIZE && (() => {
-              const totalChatPages = Math.ceil(spaceChats.length / CHAT_PAGE_SIZE);
-              return (
-                <div className="flex items-center justify-between pt-3">
-                  <p className="text-xs text-muted-foreground">
-                    Showing {(chatPage - 1) * CHAT_PAGE_SIZE + 1}–{Math.min(chatPage * CHAT_PAGE_SIZE, spaceChats.length)} of {spaceChats.length} chats
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => setChatPage(p => Math.max(1, p - 1))} disabled={chatPage === 1} className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Previous</button>
-                    {Array.from({ length: totalChatPages }, (_, i) => i + 1).map(p => (
-                      <button key={p} onClick={() => setChatPage(p)} className={cn("w-7 h-7 rounded text-xs font-semibold transition-colors", p === chatPage ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")}>{p}</button>
-                    ))}
-                    <button onClick={() => setChatPage(p => Math.min(totalChatPages, p + 1))} disabled={chatPage === totalChatPages} className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors">Next</button>
-                  </div>
-                </div>
-              );
-            })()}
+            {/* Infinite scroll sentinel */}
+            {spaceChats.length > chatDisplayCount && <div ref={chatSentinelRef} className="h-4" />}
           </>
         )}
+      </div>
       </div>
     </div>
   );
@@ -944,14 +917,14 @@ function CreateSpaceView() {
   return (
     <div className="w-full p-6 space-y-6 max-w-2xl mx-auto animate-fade-in">
       <div>
-        <h1 className="text-xl font-bold text-foreground">Create Project</h1>
+        <h1 className="text-lg font-semibold text-foreground">Create Project</h1>
         <p className="text-sm text-muted-foreground mt-1">Join an existing project or create a new one.</p>
       </div>
 
       {/* ── Section 1: Join a Project ── */}
       <div className="p-5 rounded-lg border border-border bg-secondary/10 space-y-3">
         <div>
-          <h2 className="text-sm font-bold text-foreground">Join a Project</h2>
+          <h2 className="text-sm font-semibold text-foreground">Join a Project</h2>
           <p className="text-xs text-muted-foreground mt-0.5">Paste a shared project link or access code to join.</p>
         </div>
         <div>
@@ -987,7 +960,7 @@ function CreateSpaceView() {
       {/* ── Section 2: Create a New Project ── */}
       <div className="p-5 rounded-lg border border-border bg-secondary/10 space-y-4">
         <div>
-          <h2 className="text-sm font-bold text-foreground">Create a New Project</h2>
+          <h2 className="text-sm font-semibold text-foreground">Create a New Project</h2>
           <p className="text-xs text-muted-foreground mt-0.5">Set up a new project with its own chats, files, and AI context.</p>
         </div>
 
@@ -1091,8 +1064,8 @@ function CreateSpaceView() {
 
               <div>
                 <div className="text-xs font-semibold text-foreground mb-2">Share with Members</div>
-                <div className="flex items-center gap-2 px-2.5 py-1.5 bg-background border border-border rounded-md mb-2">
-                  <Search className="w-3 h-3 text-muted-foreground shrink-0" />
+                <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg mb-2">
+                  <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                   <input
                     value={shareSearch}
                     onChange={e => setShareSearch(e.target.value)}
@@ -1214,40 +1187,78 @@ function ChatView() {
     'Generate Company Comparison': Table2,
   };
 
+  const isEmpty = (!activeChat || activeChat.messages.length === 0) && !isTyping;
+
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
       {/* Project Context Header */}
       {activeChat && activeSpace && !activeSpace.isDefault && (
         <div className="border-b border-border px-4 py-3">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="text-xs text-muted-foreground mb-0.5">
-              Project: {activeSpace.name} <span className="mx-1">•</span> <span className="text-muted-foreground">{activeSpace.visibility === 'shared' ? 'Shared' : 'Private'}</span>
+              Project: {activeSpace.name} <span className="mx-1">•</span>
+              <span className="inline-flex items-center gap-1 text-muted-foreground">
+                {activeSpace.visibility === 'shared' ? <Globe className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                {activeSpace.visibility === 'shared' ? 'Shared' : 'Private'}
+              </span>
             </div>
             <div className="text-sm font-semibold text-foreground">{activeChat.name}</div>
           </div>
         </div>
       )}
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto argo-scrollbar">
-        <div className="max-w-3xl mx-auto px-4 py-6">
-          {/* ═══ Welcome Empty State ═══ */}
-          {(!activeChat || activeChat.messages.length === 0) && !isTyping && (
-            <div className="flex items-center justify-center min-h-[60vh] animate-fade-in">
-              <div className="text-center max-w-lg">
-                <h2 className="text-2xl font-bold text-foreground mb-1">Hello, Alex.</h2>
-                <p className="text-sm text-muted-foreground mb-8">What would you like to work on today?</p>
-                <div className="grid grid-cols-2 gap-3">
-                  {selectedAgent?.capabilities.map(c => {
+      <div className={cn("flex-1 overflow-y-auto argo-scrollbar", isEmpty && "flex flex-col")}>
+        <div className={cn("max-w-4xl mx-auto px-4 py-6", isEmpty && "flex-1 flex flex-col")}>
+          {/* ═══ Welcome Empty State — centred input ═══ */}
+          {isEmpty && (
+            <div className="flex flex-col items-center justify-center flex-1 animate-fade-in">
+              <div className="w-full max-w-xl">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-foreground mb-1">Hello, Pranav.</h2>
+                  <p className="text-sm text-muted-foreground">What would you like to work on today?</p>
+                </div>
+                {/* Centred input */}
+                <div className="mb-5">
+                  <div className="flex items-end gap-2 bg-secondary/50 border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all shadow-sm">
+                    <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent side="top" align="start" className="w-44">
+                        <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                          <Globe className="w-3.5 h-3.5 mr-2" />
+                          Web Search
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                          <Brain className="w-3.5 h-3.5 mr-2" />
+                          Reasoning
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                          <Paperclip className="w-3.5 h-3.5 mr-2" />
+                          Attach File
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <textarea ref={inputRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown} placeholder="Ask anything…" rows={1} className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5" />
+                    <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}>
+                      <Send className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                {/* Suggestion cards — 4 in one row */}
+                <div className="grid grid-cols-4 gap-3">
+                  {selectedAgent?.capabilities.slice(0, 4).map(c => {
                     const IconComp = capabilityIcons[c.name] || Bot;
                     return (
                       <button
                         key={c.id}
                         onClick={() => handleCapabilityClick(c.name)}
-                        className="p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-accent/50 text-left transition-all group"
+                        className="p-3 rounded-xl border border-border hover:border-primary/40 hover:bg-accent/50 text-left transition-all group"
                       >
-                        <IconComp className="w-5 h-5 text-primary mb-2 group-hover:scale-110 transition-transform" />
-                        <div className="text-sm font-semibold text-foreground">{c.name}</div>
-                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{c.description}</div>
+                        <IconComp className="w-4 h-4 text-primary mb-2 group-hover:scale-110 transition-transform" />
+                        <div className="text-xs font-semibold text-foreground leading-snug">{c.name}</div>
                       </button>
                     );
                   })}
@@ -1263,8 +1274,8 @@ function ChatView() {
                   {msg.role === 'user' ? <User className="w-3.5 h-3.5 text-background" /> : <Bot className="w-3.5 h-3.5 text-primary" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-bold text-foreground mb-1">{msg.role === 'user' ? 'You' : msg.agentName || 'Argo'}</div>
-                  <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                  <div className="text-xs font-semibold text-foreground mb-1">{msg.role === 'user' ? 'You' : msg.agentName || 'Argo'}</div>
+                  <div className="text-sm text-foreground leading-[1.7] whitespace-pre-wrap">
                     {msg.content.split(/(\*\*.*?\*\*|\*.*?\*)/).map((part, i) => {
                       if (part.startsWith('**') && part.endsWith('**')) return <strong key={i} className="font-bold">{part.slice(2, -2)}</strong>;
                       if (part.startsWith('*') && part.endsWith('*')) return <em key={i} className="text-muted-foreground">{part.slice(1, -1)}</em>;
@@ -1281,7 +1292,7 @@ function ChatView() {
                         <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
                         <span className="truncate font-medium">{artName}</span>
                         {artType && <span className="text-muted-foreground shrink-0">({artType})</span>}
-                        <ChevronRight className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <ChevronRight className="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" />
                       </button>
                     );
                   })()}
@@ -1339,7 +1350,7 @@ function ChatView() {
                   <Bot className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-xs font-bold text-foreground mb-1">{selectedAgent?.name}</div>
+                  <div className="text-xs font-semibold text-foreground mb-1">{selectedAgent?.name}</div>
                   <div className="flex items-center gap-1.5 py-1">
                     <div className="typing-dot" />
                     <div className="typing-dot" />
@@ -1356,7 +1367,7 @@ function ChatView() {
       {/* Error state */}
       {sendError && (
         <div className="px-4 animate-fade-in">
-          <div className="max-w-3xl mx-auto flex items-center gap-2 px-3 py-2 rounded-lg bg-destructive/10 border border-destructive/20 text-xs text-destructive">
+          <div className="max-w-4xl mx-auto flex items-center gap-2 px-3 py-2 rounded-lg bg-destructive/10 border border-destructive/20 text-xs text-destructive">
             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
             <span>{sendError}</span>
             <button onClick={() => setSendError(null)} className="ml-auto p-0.5 rounded hover:bg-destructive/20 transition-colors">
@@ -1366,38 +1377,40 @@ function ChatView() {
         </div>
       )}
 
-      {/* Input */}
-      <div className="border-t border-border px-4 py-3">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-end gap-2 bg-secondary/50 border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all">
-            <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
-              <DropdownMenuTrigger asChild>
-                <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
-                  <Plus className="w-4 h-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start" className="w-44">
-                <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                  <Globe className="w-3.5 h-3.5 mr-2" />
-                  Web Search
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                  <Brain className="w-3.5 h-3.5 mr-2" />
-                  Reasoning
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                  <Paperclip className="w-3.5 h-3.5 mr-2" />
-                  Attach File
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <textarea ref={inputRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown} placeholder="Ask anything…" rows={1} className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5" />
-            <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}>
-              <Send className="w-3.5 h-3.5" />
-            </button>
+      {/* Input — only shown when conversation has started */}
+      {!isEmpty && (
+        <div className="border-t border-border px-4 py-3">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-end gap-2 bg-secondary/50 border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all">
+              <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
+                <DropdownMenuTrigger asChild>
+                  <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="start" className="w-44">
+                  <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                    <Globe className="w-3.5 h-3.5 mr-2" />
+                    Web Search
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                    <Brain className="w-3.5 h-3.5 mr-2" />
+                    Reasoning
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowPlus(false)}>
+                    <Paperclip className="w-3.5 h-3.5 mr-2" />
+                    Attach File
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <textarea ref={inputRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown} placeholder="Ask anything…" rows={1} className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5" />
+              <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}>
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -1407,9 +1420,9 @@ function ChatView() {
 function WorkspaceDashboard() {
   const { spaces, openSpaceWorkspace, setCenterView } = useArgo();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<'all' | 'private' | 'shared' | 'owned'>('all');
-  const [page, setPage] = useState(1);
-  const PAGE_SIZE = 10;
+  const [filter, setFilter] = useState<'all' | 'private' | 'shared'>('all');
+  const [projectDisplayCount, setProjectDisplayCount] = useState(20);
+  const projectSentinelRef = useRef<HTMLDivElement>(null);
 
   const otherProjects = spaces.filter(s => !s.isDefault);
 
@@ -1418,145 +1431,108 @@ function WorkspaceDashboard() {
     .filter(s => {
       if (filter === 'private') return s.visibility === 'private';
       if (filter === 'shared') return s.visibility === 'shared';
-      if (filter === 'owned') return s.owner === 'You';
       return true;
     });
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated = filtered.slice(0, projectDisplayCount);
 
   const filterLabels: Record<string, string> = {
-    all: 'All Projects',
-    owned: 'Owned by Me',
-    shared: 'Shared with Me',
-    private: 'Private Only',
+    all: 'All',
+    shared: 'Shared',
+    private: 'Private',
   };
 
-  const renderRow = (s: typeof spaces[0]) => (
-    <tr key={s.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-      <td className="px-4 py-3 font-semibold text-foreground">
-        {s.name}
-        {s.isDefault && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">Default</span>}
-      </td>
-      <td className="px-4 py-3 text-muted-foreground truncate max-w-xs">{s.description || '—'}</td>
-      <td className="px-4 py-3 text-muted-foreground">{s.owner}</td>
-      <td className="px-4 py-3">
-        <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", s.visibility === 'shared' ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground")}>
-          {s.visibility === 'shared' ? 'Shared' : 'Private'}
-        </span>
-      </td>
-      <td className="px-4 py-3">
-        <button
-          onClick={() => openSpaceWorkspace(s.id)}
-          className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
-          title="Open project"
-        >
-          <ExternalLink className="w-3.5 h-3.5" />
-        </button>
-      </td>
-    </tr>
-  );
+  // Infinite scroll
+  useEffect(() => {
+    if (!projectSentinelRef.current || filtered.length <= projectDisplayCount) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) setProjectDisplayCount(prev => prev + 20);
+    }, { threshold: 0.1 });
+    observer.observe(projectSentinelRef.current);
+    return () => observer.disconnect();
+  }, [filtered.length, projectDisplayCount]);
 
   return (
-    <div className="w-full p-6 space-y-5 animate-fade-in">
-      <div>
-        <h2 className="text-lg font-bold text-foreground">Projects</h2>
-        <p className="text-sm text-muted-foreground mt-1">All projects assigned to you.</p>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg max-w-md flex-1">
-          <Search className="w-3.5 h-3.5 text-muted-foreground" />
-          <input
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
-            placeholder="Search projects..."
-            className="flex-1 text-sm bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
-          />
+    <div className="w-full p-6 animate-fade-in">
+      <div className="max-w-4xl mx-auto space-y-5">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground tracking-tight">Projects ({filtered.length})</h2>
+          <p className="text-sm text-muted-foreground mt-1">All projects assigned to you.</p>
         </div>
-        {/* Filter Dropdown - Radix */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
-              {filterLabels[filter]}
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {(['all', 'private', 'shared', 'owned'] as const).map(f => (
-              <DropdownMenuItem key={f} onClick={() => { setFilter(f); setPage(1); }} className={cn(filter === f && "bg-accent font-semibold")}>{filterLabels[f]}</DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <button
-          onClick={() => setCenterView('new-space')}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          Create Project
-        </button>
-      </div>
 
-      <div className="border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 z-10">
-            <tr className="bg-secondary border-b border-border">
-              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Project Name</th>
-              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Description</th>
-              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-32">Owner</th>
-              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-28">Visibility</th>
-              <th className="text-left px-4 py-2.5 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-20">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginated.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center py-16 text-muted-foreground">
-                  <FolderOpen className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
-                  <p className="font-medium">No projects found.</p>
-                  <p className="text-xs mt-1">Create your first project to get started.</p>
-                </td>
-              </tr>
-            ) : (
-              paginated.map(s => renderRow(s))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-muted-foreground">
-            Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} projects
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg flex-1">
+            <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <input
+              value={search}
+              onChange={e => { setSearch(e.target.value); setProjectDisplayCount(20); }}
+              placeholder="Search projects..."
+              className="flex-1 text-sm bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+          </div>
           <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors"
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+            {(['all', 'private', 'shared'] as const).map(f => (
               <button
-                key={p}
-                onClick={() => setPage(p)}
-                className={cn("w-7 h-7 rounded text-xs font-semibold transition-colors", p === page ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent")}
+                key={f}
+                onClick={() => { setFilter(f); setProjectDisplayCount(20); }}
+                className={cn("px-3 py-1.5 rounded-lg text-sm transition-colors",
+                  filter === f
+                    ? "bg-accent text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                )}
               >
-                {p}
+                {filterLabels[f]}
               </button>
             ))}
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-2.5 py-1 rounded text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent disabled:opacity-40 disabled:pointer-events-none transition-colors"
-            >
-              Next
-            </button>
           </div>
+          <button
+            onClick={() => setCenterView('new-space')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Create Project
+          </button>
         </div>
-      )}
+
+        {/* Sort headers */}
+        <div className="flex items-center px-4 text-xs text-muted-foreground">
+          <span className="flex-1">Name</span>
+          <span className="w-16 shrink-0 text-right">Owner</span>
+          <span className="w-16 shrink-0 text-right">Date</span>
+        </div>
+
+        {paginated.length === 0 ? (
+          <div className="text-center py-16 animate-fade-in">
+            <FolderOpen className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-sm font-medium text-muted-foreground">No projects found.</p>
+            <p className="text-xs text-muted-foreground mt-1">Create your first project to get started.</p>
+          </div>
+        ) : (
+          <div className="space-y-0.5">
+            {paginated.map(s => (
+              <button
+                key={s.id}
+                onClick={() => openSpaceWorkspace(s.id)}
+                className="w-full flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-accent/50 transition-colors text-left group"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-foreground">{s.name}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5 truncate">{s.description || 'No description'}</div>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  {s.visibility === 'shared'
+                    ? <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+                    : <Lock className="w-3.5 h-3.5 text-muted-foreground" />}
+                  <span className="text-xs text-muted-foreground w-16 text-right">{s.owner}</span>
+                  <span className="text-xs text-muted-foreground w-16 text-right">{s.createdAt.toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+                </div>
+              </button>
+            ))}
+            {/* Infinite scroll sentinel */}
+            {filtered.length > projectDisplayCount && <div ref={projectSentinelRef} className="h-4" />}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -1566,46 +1542,19 @@ function WorkspaceDashboard() {
 export function CenterPanel() {
   const { centerView, adminTab } = useArgo();
 
-  if (centerView === 'config') {
-    return (
-      <div className="flex-1 flex flex-col h-screen bg-background min-w-0 overflow-y-auto argo-scrollbar">
-        <ConfigView tab={adminTab} />
-      </div>
-    );
-  }
+  const wrap = (children: React.ReactNode) => (
+    <div className="flex-1 flex flex-col h-screen bg-background min-w-0 overflow-y-auto argo-scrollbar">
+      {children}
+    </div>
+  );
 
-  if (centerView === 'artifacts-table') {
-    return (
-      <div className="flex-1 flex flex-col h-screen bg-background min-w-0 overflow-y-auto argo-scrollbar">
-        <ArtifactsTable />
-      </div>
-    );
-  }
+  if (centerView === 'config') return wrap(<ConfigView tab={adminTab} />);
+  if (centerView === 'artifacts-table') return wrap(<ArtifactsTable />);
+  if (centerView === 'new-space') return wrap(<CreateSpaceView />);
+  if (centerView === 'projects') return wrap(<WorkspaceDashboard />);
+  if (centerView === 'space-workspace') return wrap(<SpaceWorkspaceView />);
 
-  if (centerView === 'new-space') {
-    return (
-      <div className="flex-1 flex flex-col h-screen bg-background min-w-0 overflow-y-auto argo-scrollbar">
-        <CreateSpaceView />
-      </div>
-    );
-  }
-
-  if (centerView === 'projects') {
-    return (
-      <div className="flex-1 flex flex-col h-screen bg-background min-w-0 overflow-y-auto argo-scrollbar">
-        <WorkspaceDashboard />
-      </div>
-    );
-  }
-
-  if (centerView === 'space-workspace') {
-    return (
-      <div className="flex-1 flex flex-col h-screen bg-background min-w-0 overflow-y-auto argo-scrollbar">
-        <SpaceWorkspaceView />
-      </div>
-    );
-  }
-
+  // ChatView has its own header — don't double-wrap
   return (
     <div className="flex-1 flex flex-col h-screen bg-background min-w-0">
       <ChatView />

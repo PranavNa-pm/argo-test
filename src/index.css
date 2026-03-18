@@ -9,7 +9,7 @@
     --background: 40 20% 99%;
     --foreground: 220 20% 12%;
 
-    --card: 40 20% 99%;
+    --card: 220 14% 97%;
     --card-foreground: 220 20% 12%;
 
     --popover: 0 0% 100%;
@@ -18,11 +18,11 @@
     --primary: 193 75% 42%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 10% 95%;
-    --secondary-foreground: 220 10% 38%;
+    --secondary: 220 12% 93%;
+    --secondary-foreground: 220 14% 32%;
 
-    --muted: 220 10% 95%;
-    --muted-foreground: 220 8% 42%;
+    --muted: 220 8% 96%;
+    --muted-foreground: 220 8% 48%;
 
     --accent: 220 10% 93%;
     --accent-foreground: 220 20% 12%;
@@ -46,13 +46,60 @@
     --sidebar-ring: 193 75% 42%;
 
     /* Custom tokens */
-    --surface-elevated: 40 15% 97%;
+    --surface-elevated: 220 14% 97%;
     --surface-hover: 220 10% 93%;
     --text-dim: 220 8% 52%;
     --accent-glow: 193 75% 42%;
     --success: 152 55% 38%;
     --warning: 38 90% 50%;
     --info: 210 70% 50%;
+  }
+
+  .dark {
+    --background: 222 18% 10%;
+    --foreground: 210 20% 94%;
+
+    --card: 222 16% 13%;
+    --card-foreground: 210 20% 94%;
+
+    --popover: 222 18% 12%;
+    --popover-foreground: 210 20% 94%;
+
+    --primary: 193 70% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 20%;
+    --secondary-foreground: 220 10% 72%;
+
+    --muted: 220 12% 17%;
+    --muted-foreground: 220 8% 56%;
+
+    --accent: 220 14% 22%;
+    --accent-foreground: 210 20% 94%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 20%;
+    --input: 220 14% 20%;
+    --ring: 193 70% 48%;
+
+    --sidebar-background: 222 20% 8%;
+    --sidebar-foreground: 220 8% 72%;
+    --sidebar-primary: 193 70% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 18%;
+    --sidebar-accent-foreground: 210 20% 94%;
+    --sidebar-border: 220 14% 16%;
+    --sidebar-ring: 193 70% 48%;
+
+    --surface-elevated: 222 16% 15%;
+    --surface-hover: 220 14% 20%;
+    --text-dim: 220 8% 48%;
+    --accent-glow: 193 70% 48%;
+    --success: 152 55% 44%;
+    --warning: 38 90% 56%;
+    --info: 210 70% 58%;
   }
 }
 

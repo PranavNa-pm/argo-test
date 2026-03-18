@@ -100,22 +100,22 @@ function TracePanel({ trace }: { trace: ExecutionTrace }) {
             <div className="mt-2 pl-1 text-xs font-mono text-secondary-foreground space-y-1">
               <div className="flex items-center gap-1.5">
                 <Bot className="w-3 h-3 text-foreground" />
-                <span className="text-foreground font-bold">Agent</span>
+                <span className="text-foreground font-semibold">Agent</span>
                 <span className="text-muted-foreground">→ {trace.agentName}</span>
               </div>
               <div className="flex items-center gap-1.5 pl-4">
                 <Layers className="w-3 h-3 text-muted-foreground" />
-                <span className="text-foreground font-bold">Capability</span>
+                <span className="text-foreground font-semibold">Capability</span>
                 <span className="text-muted-foreground">→ {trace.capability}</span>
               </div>
               <div className="flex items-center gap-1.5 pl-8">
                 <Wrench className="w-3 h-3 text-muted-foreground" />
-                <span className="text-foreground font-bold">Tools</span>
+                <span className="text-foreground font-semibold">Tools</span>
                 <span className="text-muted-foreground">→ {trace.toolsUsed.join(', ')}</span>
               </div>
               <div className="flex items-center gap-1.5 pl-12">
                 <Database className="w-3 h-3 text-success" />
-                <span className="text-foreground font-bold">Data</span>
+                <span className="text-foreground font-semibold">Data</span>
                 <span className="text-muted-foreground">→ {trace.documentsRetrieved.length > 0 ? trace.documentsRetrieved.join(', ') : 'structured output'}</span>
               </div>
             </div>
@@ -174,14 +174,16 @@ export function RightPanel() {
   return (
     <div className={cn(
       "h-screen bg-background panel-border-left flex flex-col overflow-hidden animate-slide-in-right",
-      isFullscreen ? "fixed inset-0 z-50 w-full" : "w-[480px] min-w-[400px]"
+      isFullscreen
+        ? "fixed inset-0 z-50 w-full"
+        : "fixed inset-0 z-40 w-full md:relative md:inset-auto md:z-auto md:w-[480px] md:min-w-[400px]"
     )}>
       {/* Header */}
       <div className="px-4 py-3 border-b border-border space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
             <FileText className="w-4 h-4 text-primary shrink-0" />
-            <h2 className="text-sm font-bold text-foreground truncate">{activeArtifact.name}</h2>
+            <h2 className="text-sm font-semibold text-foreground truncate">{activeArtifact.name}</h2>
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <button onClick={() => setIsFullscreen(!isFullscreen)} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
@@ -247,11 +249,11 @@ export function RightPanel() {
         {/* Actions bar */}
         <div className="flex items-center gap-2 pt-1">
           <button className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="Download as DOCX">
-            <Download className="w-3 h-3" />
+            <Download className="w-3.5 h-3.5" />
             Download
           </button>
           <button onClick={handleOpenInChat} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="Open in Chat">
-            <MessageSquare className="w-3 h-3" />
+            <MessageSquare className="w-3.5 h-3.5" />
             Open in Chat
           </button>
           <span className="text-[10px] text-muted-foreground ml-auto">Read-only · Refine via chat</span>
@@ -288,13 +290,13 @@ export function FilesPanel() {
   if (!activeFilesSpaceId || !space) return null;
 
   return (
-    <div className="w-[420px] min-w-[360px] h-screen bg-background panel-border-left flex flex-col overflow-hidden animate-slide-in-right">
+    <div className="fixed inset-0 z-40 w-full md:relative md:inset-auto md:z-auto md:w-[420px] md:min-w-[360px] h-screen bg-background panel-border-left flex flex-col overflow-hidden animate-slide-in-right">
       {/* Header */}
       <div className="px-4 py-3 border-b border-border space-y-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
             <FolderOpen className="w-4 h-4 text-primary shrink-0" />
-            <h2 className="text-sm font-bold text-foreground truncate">Files — {space.name}</h2>
+            <h2 className="text-sm font-semibold text-foreground truncate">Files — {space.name}</h2>
           </div>
           <button onClick={closeFilesPanel} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
             <X className="w-4 h-4" />
@@ -307,7 +309,7 @@ export function FilesPanel() {
           <span className="text-xs text-muted-foreground">{filtered.length} file{filtered.length !== 1 ? 's' : ''}</span>
           {isOwner ? (
             <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
-              <Upload className="w-3 h-3" />
+              <Upload className="w-3.5 h-3.5" />
               Upload File
             </button>
           ) : (
@@ -341,7 +343,7 @@ export function FilesPanel() {
                     {f.date}
                   </div>
                   <div className="text-[10px] text-muted-foreground mt-0.5">
-                    Uploaded by {f.uploadedBy}
+                    {f.uploadedBy}
                   </div>
                 </div>
                 <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
