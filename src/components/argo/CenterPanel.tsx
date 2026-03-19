@@ -853,6 +853,9 @@ function SpaceWorkspaceView() {
       {/* Chats tab */}
       {(space.isDefault || activeTab === 'chats') && (
         <div>
+          {spaceChats.length > 0 && (
+            <p className="text-xs text-muted-foreground mb-3">{spaceChats.length} chat{spaceChats.length !== 1 ? 's' : ''}</p>
+          )}
           {spaceChats.length === 0 ? (
             <div className="text-center py-8 animate-fade-in">
               <MessageSquare className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
@@ -888,8 +891,9 @@ function SpaceWorkspaceView() {
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs text-muted-foreground">{(MOCK_PROJECT_FILES[activeSpaceId] || []).length} file{(MOCK_PROJECT_FILES[activeSpaceId] || []).length !== 1 ? 's' : ''}</span>
             {isOwner && (
-              <button className="p-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" title="Upload file">
+              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-xs font-medium" title="Upload file">
                 <Upload className="w-3.5 h-3.5" />
+                Upload
               </button>
             )}
           </div>
@@ -953,9 +957,7 @@ function SpaceWorkspaceView() {
 
           {/* Member list */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-foreground">Members ({shareMembers.length})</span>
-            </div>
+            <p className="text-xs text-muted-foreground mb-3">{shareMembers.length} member{shareMembers.length !== 1 ? 's' : ''}</p>
             <div className="space-y-0.5">
               {shareMembers.map(m => (
                 <div key={m.name} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/50 transition-colors group">
@@ -976,17 +978,6 @@ function SpaceWorkspaceView() {
             </div>
           </div>
 
-          {/* Invite by name — post MVP */}
-          <div className="opacity-50 pointer-events-none select-none border-t border-border pt-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-xs font-semibold text-foreground">Invite by name</div>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">Coming soon</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg">
-              <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-              <input value={shareSearch} onChange={() => {}} placeholder="Search by name..." className="flex-1 text-xs bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none" readOnly />
-            </div>
-          </div>
         </div>
       )}
       </div>
