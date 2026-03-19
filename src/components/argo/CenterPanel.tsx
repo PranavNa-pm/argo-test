@@ -843,24 +843,30 @@ function SpaceWorkspaceView() {
                       <p className="text-[10px] text-muted-foreground mt-1">Anyone with this link must log in to view the project.</p>
                     </div>
                     <div className="border-t border-border" />
-                    <div className="text-xs font-semibold text-foreground mb-2">Share with members</div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg mb-2">
-                      <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                      <input
-                        value={shareSearch}
-                        onChange={e => setShareSearch(e.target.value)}
-                        placeholder="Search by name..."
-                        className="flex-1 text-xs bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
-                      />
+                    <div className="opacity-50 pointer-events-none select-none" title="Coming after MVP">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-xs font-semibold text-foreground">Share with members</div>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">Coming soon</span>
+                      </div>
+                      <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg mb-2">
+                        <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                        <input
+                          value={shareSearch}
+                          onChange={() => {}}
+                          placeholder="Search by name..."
+                          className="flex-1 text-xs bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+                          readOnly
+                        />
+                      </div>
+                      {filteredMembers.map(m => (
+                        <label key={m.name} className="flex items-center gap-2 text-sm text-foreground cursor-default py-1">
+                          <input type="checkbox" defaultChecked={m.selected} className="rounded border-border" readOnly />
+                          <span className="flex-1">{m.name}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{m.role}</span>
+                        </label>
+                      ))}
+                      <button disabled className="w-full mt-2 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-semibold">Update Sharing</button>
                     </div>
-                    {filteredMembers.map(m => (
-                      <label key={m.name} className="flex items-center gap-2 text-sm text-foreground cursor-pointer py-1">
-                        <input type="checkbox" defaultChecked={m.selected} className="rounded border-border" />
-                        <span className="flex-1">{m.name}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{m.role}</span>
-                      </label>
-                    ))}
-                    <button className="w-full mt-2 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90">Update Sharing</button>
                   </div>
                 </>
               )}
@@ -1141,21 +1147,25 @@ function CreateSpaceView() {
 
               <div className="border-t border-border" />
 
-              <div>
-                <div className="text-xs font-semibold text-foreground mb-2">Share with Members</div>
+              <div className="opacity-50 pointer-events-none select-none" title="Coming after MVP">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-semibold text-foreground">Share with Members</div>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">Coming soon</span>
+                </div>
                 <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg mb-2">
                   <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                   <input
                     value={shareSearch}
-                    onChange={e => setShareSearch(e.target.value)}
+                    onChange={() => {}}
                     placeholder="Search by name..."
                     className="flex-1 text-xs bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+                    readOnly
                   />
                 </div>
                 <div className="space-y-1">
                   {filteredMembers.map(m => (
-                    <label key={m.name} className="flex items-center gap-2 text-sm text-foreground cursor-pointer py-1">
-                      <input type="checkbox" defaultChecked={m.selected} className="rounded border-border" />
+                    <label key={m.name} className="flex items-center gap-2 text-sm text-foreground cursor-default py-1">
+                      <input type="checkbox" defaultChecked={m.selected} className="rounded border-border" readOnly />
                       <span className="flex-1">{m.name}</span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{m.role}</span>
                     </label>
