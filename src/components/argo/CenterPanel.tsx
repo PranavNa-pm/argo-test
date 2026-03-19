@@ -1600,7 +1600,7 @@ function WorkspaceDashboard() {
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={() => { setSortField('owner'); setSortAsc(sortField === 'owner' ? !sortAsc : true); }}
-              className="text-[11px] font-medium text-foreground/60 hover:text-foreground transition-colors select-none flex items-center gap-1 w-28 justify-end uppercase tracking-wide"
+              className="text-[11px] font-medium text-foreground/60 hover:text-foreground transition-colors select-none flex items-center gap-1 w-40 justify-end uppercase tracking-wide"
             >
               Owner {sortField === 'owner' && <span className="text-foreground">{sortAsc ? '↑' : '↓'}</span>}
             </button>
@@ -1632,8 +1632,8 @@ function WorkspaceDashboard() {
                   <div className="text-xs text-muted-foreground mt-0.5 truncate">{s.description || 'No description'}</div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <div className="flex items-center justify-end gap-1.5 w-28">
-                    <span className="text-xs text-muted-foreground text-right">{s.owner}</span>
+                  <div className="flex items-center justify-end gap-1.5 w-40">
+                    <span className="text-xs text-muted-foreground text-right">Owned by {s.owner}</span>
                     {s.visibility === 'shared'
                       ? <Globe className="w-3 h-3 text-muted-foreground shrink-0" />
                       : <Lock className="w-3 h-3 text-muted-foreground shrink-0" />}
