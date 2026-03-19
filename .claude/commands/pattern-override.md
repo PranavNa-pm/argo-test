@@ -1,67 +1,32 @@
 ---
-description: Run before making a change that might conflict with an established Argo pattern. Compares the requested change against STYLE_GUIDE.md and active skills, surfaces any conflicts, and asks how to proceed. Use when something feels like it breaks a rule, or when Lovable or a teammate suggests a different approach.
+description: Run before making a change that might conflict with an established Argo pattern. Surfaces conflicts and asks how to proceed. Use when something feels like it breaks a rule, or when Lovable suggests a different approach.
 argument-hint: [describe the change you want to make]
 ---
 
 # Pattern Override Check
 
-You want to make this change: **$ARGUMENTS**
+Requested change: **$ARGUMENTS**
 
-Before proceeding, check if this conflicts with any established Argo pattern.
+1. Read `.claude/rules/design-patterns.md`, `.claude/rules/style-tokens.md`, `.claude/rules/component-structure.md`
+2. Compare the requested change against every rule across all three files
+3. List every conflict found:
+   ```
+   CONFLICT: [Rule name]
+   Current rule: [what it says]
+   Requested change: [what this does differently]
+   Impact: [what breaks if allowed]
+   ```
+   If no conflicts: say "No conflicts — safe to proceed" and stop.
 
-## Step 1 — Read the rules
-Read these files in full:
-- `STYLE_GUIDE.md`
-- `.claude/commands/design-review.md`
-- `.claude/commands/style-check.md`
+4. For each conflict, present these three options:
 
-## Step 2 — Identify conflicts
-Compare the requested change against every rule. List every conflict found:
+   **A — Update the rule**
+   Change the relevant `.claude/rules/` file + `STYLE_GUIDE.md` to allow this going forward. Add dated note: `<!-- Updated YYYY-MM-DD: [reason] -->`
 
-```
-CONFLICT: [Rule name from STYLE_GUIDE.md or skill]
-Current rule: [what the rule says]
-Requested change: [what this would do differently]
-Impact: [what breaks if we allow this]
-```
+   **B — One-off exception**
+   Proceed without changing the rules. Add inline comment: `// Pattern exception: [reason] — approved YYYY-MM-DD`
 
-If no conflicts: say "No conflicts found — safe to proceed" and stop.
+   **C — Change the approach**
+   Suggest an alternative that achieves the goal without breaking the rule.
 
-## Step 3 — Present options for each conflict
-
-For each conflict found, present exactly these three options:
-
-**A — Update the rule**
-> "Change STYLE_GUIDE.md and the relevant skill to allow this. The new pattern becomes the standard going forward."
-> Impact: [what this means for existing components]
-
-**B — One-off exception**
-> "Proceed with this change without updating the rules. This is a deliberate exception, not a new standard."
-> Risk: [what drift this might cause]
-
-**C — Change the approach**
-> "Find a way to achieve the goal that doesn't conflict with the existing rule."
-> Suggestion: [alternative approach that fits the current rules]
-
-## Step 4 — Wait for decision
-
-Do not proceed until the user picks A, B, or C for each conflict.
-
-If A is chosen:
-- Update `STYLE_GUIDE.md` with the new rule
-- Update the relevant skill (`.claude/commands/design-review.md` or `style-check.md`) to reflect the change
-- Note the date of the override as a comment in the skill: `<!-- Updated [DATE]: [reason] -->`
-- Then make the change
-
-If B is chosen:
-- Add an inline comment in the code: `// Pattern exception: [reason] — approved [DATE]`
-- Make the change without touching the skill or style guide
-
-If C is chosen:
-- Propose the alternative approach and implement it
-
----
-
-## Why this matters
-
-Every time a pattern changes without updating the rules, the skills and style guide drift from reality. Over time nobody knows what the real rules are. This skill keeps STYLE_GUIDE.md as the actual source of truth — not just a document that gets ignored.
+5. Wait for the user to pick A, B, or C before proceeding.
