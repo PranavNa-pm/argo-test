@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Send, Plus, Globe, Brain, Paperclip, Bot, User, FileText,
+  Send, Plus, Globe, Paperclip, Bot, User, FileText,
   ChevronRight, ThumbsUp, ThumbsDown, AlertCircle, X, Lock,
   FileSignature, Table2, ScrollText,
 } from 'lucide-react';
@@ -122,7 +122,7 @@ export function ChatView() {
                   </div>
                   {/* Centred input */}
                   <div className="mb-5">
-                    <div className="flex items-end gap-2 bg-secondary/50 border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all shadow-sm">
+                    <div className="flex items-end gap-2 bg-card border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all shadow-sm">
                       <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
                         <DropdownMenuTrigger asChild>
                           <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
@@ -133,10 +133,6 @@ export function ChatView() {
                           <DropdownMenuItem onClick={() => setShowPlus(false)}>
                             <Globe className="w-3.5 h-3.5 mr-2" />
                             Web Search
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                            <Brain className="w-3.5 h-3.5 mr-2" />
-                            Reasoning
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setShowPlus(false)}>
                             <Paperclip className="w-3.5 h-3.5 mr-2" />
@@ -156,7 +152,7 @@ export function ChatView() {
                       <button
                         key={c.id}
                         onClick={() => handleCapabilityClick(c.name)}
-                        className="px-3 py-4 rounded-xl border border-border hover:border-primary/40 hover:bg-accent/50 text-center transition-all flex items-center justify-center min-h-[64px]"
+                        className="px-3 py-2.5 rounded-xl border border-border hover:border-primary/40 hover:bg-accent/50 text-center transition-all flex items-center justify-center min-h-[52px]"
                       >
                         <div className="text-xs font-medium text-foreground leading-snug">{c.name}</div>
                       </button>
@@ -292,10 +288,6 @@ export function ChatView() {
                   <DropdownMenuItem onClick={() => setShowPlus(false)}>
                     <Globe className="w-3.5 h-3.5 mr-2" />
                     Web Search
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                    <Brain className="w-3.5 h-3.5 mr-2" />
-                    Reasoning
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setShowPlus(false)}>
                     <Paperclip className="w-3.5 h-3.5 mr-2" />
