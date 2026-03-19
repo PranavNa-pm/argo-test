@@ -1613,16 +1613,16 @@ function WorkspaceDashboard() {
                 className="w-full flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-accent/50 transition-colors text-left group"
               >
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground truncate">{s.name}</span>
-                    {s.visibility === 'shared'
-                      ? <Globe className="w-3 h-3 text-muted-foreground shrink-0" />
-                      : <Lock className="w-3 h-3 text-muted-foreground shrink-0" />}
-                  </div>
+                  <span className="text-sm font-medium text-foreground truncate block">{s.name}</span>
                   <div className="text-xs text-muted-foreground mt-0.5 truncate">{s.description || 'No description'}</div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-xs text-muted-foreground w-16 text-right">{s.owner}</span>
+                  <div className="flex items-center justify-end gap-1.5 w-20">
+                    {s.visibility === 'shared'
+                      ? <Globe className="w-3 h-3 text-muted-foreground shrink-0" />
+                      : <Lock className="w-3 h-3 text-muted-foreground shrink-0" />}
+                    <span className="text-xs text-muted-foreground">{s.owner}</span>
+                  </div>
                   <span className="text-xs text-muted-foreground w-16 text-right">{s.createdAt.toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
                 </div>
               </button>
