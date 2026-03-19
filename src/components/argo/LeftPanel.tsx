@@ -368,16 +368,18 @@ export function LeftPanel() {
                             <button
                               onClick={() => openSpaceWorkspace(project.id)}
                               className={cn(
-                                "flex-1 flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-left",
+                                "flex-1 flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-left min-w-0",
                                 isActiveProject
                                   ? "bg-accent text-foreground font-semibold"
                                   : "text-sidebar-foreground hover:bg-accent/60"
                               )}
                             >
                               <FolderOpen className="w-3.5 h-3.5 shrink-0" />
-                              <span className="truncate font-medium flex-1 min-w-0">{project.name}</span>
-                              {project.visibility === 'shared' ? <Globe className="w-3 h-3 text-muted-foreground shrink-0 ml-auto" /> : <Lock className="w-3 h-3 text-muted-foreground shrink-0 ml-auto" />}
+                              <span className="truncate font-medium min-w-0">{project.name}</span>
                             </button>
+                            {project.visibility === 'shared'
+                              ? <Globe className="w-3 h-3 text-muted-foreground shrink-0" />
+                              : <Lock className="w-3 h-3 text-muted-foreground shrink-0" />}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
