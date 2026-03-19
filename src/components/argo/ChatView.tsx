@@ -153,10 +153,10 @@ export function ChatView() {
   const ActivePills = () => (hasActiveTools || fileError) ? (
     <div className="flex items-start gap-1.5 px-3 pt-2 pb-0 flex-wrap">
       {webSearchEnabled && (
-        <span className="inline-flex items-center gap-1 text-[11px] bg-secondary border border-border text-foreground rounded-full px-2 py-0.5">
+        <span className="inline-flex items-center gap-1 text-[11px] bg-primary/10 border border-primary/30 text-primary rounded-full px-2 py-0.5">
           <Globe className="w-3 h-3 shrink-0" />
           Web search
-          <button onClick={() => setWebSearchEnabled(false)} className="ml-0.5 text-muted-foreground hover:text-foreground transition-colors" aria-label="Remove web search">
+          <button onClick={() => setWebSearchEnabled(false)} className="ml-0.5 hover:text-primary/60 transition-colors" aria-label="Remove web search">
             <X className="w-3 h-3" />
           </button>
         </span>
