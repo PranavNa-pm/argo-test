@@ -222,7 +222,7 @@ export function LeftPanel() {
           <img src={argoLogo} alt="ARGO" className="h-3 w-auto" />
         </div>
         <button onClick={() => setSidebarCollapsed(true)} className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Collapse sidebar">
-          <PanelLeftClose className="w-4 h-4" />
+          <PanelLeft className="w-4 h-4" />
         </button>
       </div>
 
@@ -238,7 +238,7 @@ export function LeftPanel() {
         </button>
 
         {/* Search */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg">
+        <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
           <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
           <input
             value={searchQuery}

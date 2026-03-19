@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Send, Plus, Globe, Paperclip, Bot, User, FileText,
   ChevronRight, ThumbsUp, ThumbsDown, AlertCircle, X, Lock,
-  FileSignature, Table2, ScrollText,
+  FileSignature, Table2, ScrollText, Check,
 } from 'lucide-react';
 import { useArgo } from '@/context/ArgoContext';
 import { cn } from '@/lib/utils';
@@ -26,12 +26,15 @@ export function ChatView() {
 
   const [input, setInput] = useState('');
   const [showPlus, setShowPlus] = useState(false);
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
+  const [attachedFileName, setAttachedFileName] = useState<string | null>(null);
   const [feedbackState, setFeedbackState] = useState<Record<string, 'up' | 'down' | null>>({});
   const [feedbackComment, setFeedbackComment] = useState<Record<string, string>>({});
   const [showFeedbackInput, setShowFeedbackInput] = useState<string | null>(null);
   const [sendError, setSendError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,6 +60,12 @@ export function ChatView() {
     setInput(e.target.value);
     e.target.style.height = 'auto';
     e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px';
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setAttachedFileName(file.name);
+    e.target.value = '';
   };
 
   const handleThumbsUp = (msgId: string) => {
@@ -90,10 +99,54 @@ export function ChatView() {
     'Generate Company Comparison': Table2,
   };
 
+  const hasActiveTools = webSearchEnabled || !!attachedFileName;
   const isEmpty = (!activeChat || activeChat.messages.length === 0) && !isTyping;
+
+  // Shared active pills row
+  const ActivePills = () => hasActiveTools ? (
+    <div className="flex items-center gap-1.5 px-3 pt-2 pb-0 flex-wrap">
+      {webSearchEnabled && (
+        <span className="inline-flex items-center gap-1 text-[11px] bg-primary/10 border border-primary/20 text-primary rounded-full px-2 py-0.5">
+          <Globe className="w-3 h-3 shrink-0" />
+          Web search
+          <button onClick={() => setWebSearchEnabled(false)} className="ml-0.5 hover:text-primary/60 transition-colors">
+            <X className="w-3 h-3" />
+          </button>
+        </span>
+      )}
+      {attachedFileName && (
+        <span className="inline-flex items-center gap-1 text-[11px] bg-secondary border border-border text-foreground rounded-full px-2 py-0.5 max-w-[200px]">
+          <Paperclip className="w-3 h-3 shrink-0" />
+          <span className="truncate">{attachedFileName}</span>
+          <button onClick={() => setAttachedFileName(null)} className="ml-0.5 text-muted-foreground hover:text-foreground transition-colors shrink-0">
+            <X className="w-3 h-3" />
+          </button>
+        </span>
+      )}
+    </div>
+  ) : null;
+
+  // Shared dropdown content
+  const PlusDropdown = () => (
+    <DropdownMenuContent side="top" align="start" className="w-44">
+      <DropdownMenuItem onClick={() => { setWebSearchEnabled(v => !v); setShowPlus(false); }}>
+        <Globe className={cn("w-3.5 h-3.5 mr-2", webSearchEnabled && "text-primary")} />
+        <span className={cn("flex-1", webSearchEnabled && "text-primary font-medium")}>Web Search</span>
+        {webSearchEnabled && <Check className="w-3.5 h-3.5 text-primary ml-1" />}
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={() => { fileInputRef.current?.click(); setShowPlus(false); }}>
+        <Paperclip className={cn("w-3.5 h-3.5 mr-2", attachedFileName && "text-primary")} />
+        <span className={cn("flex-1", attachedFileName && "text-primary font-medium")}>Attach File</span>
+        {attachedFileName && <Check className="w-3.5 h-3.5 text-primary ml-1" />}
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  );
 
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
+      {/* Hidden file input */}
+      <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
+
       {/* Project Context Header */}
       {activeChat && activeSpace && !activeSpace.isDefault && (
         <div className="border-b border-border px-4 py-3">
@@ -122,28 +175,22 @@ export function ChatView() {
                   </div>
                   {/* Centred input */}
                   <div className="mb-5">
-                    <div className="flex items-end gap-2 bg-card border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all shadow-sm">
-                      <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
-                        <DropdownMenuTrigger asChild>
-                          <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent side="top" align="start" className="w-44">
-                          <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                            <Globe className="w-3.5 h-3.5 mr-2" />
-                            Web Search
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                            <Paperclip className="w-3.5 h-3.5 mr-2" />
-                            Attach File
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      <textarea ref={inputRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown} placeholder="Ask anything…" rows={1} className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5" />
-                      <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}>
-                        <Send className="w-3.5 h-3.5" />
-                      </button>
+                    <div className="bg-card border border-border rounded-xl focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all shadow-sm">
+                      <ActivePills />
+                      <div className="flex items-end gap-2 px-3 py-2.5">
+                        <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
+                          <DropdownMenuTrigger asChild>
+                            <button className={cn("p-1 rounded hover:bg-accent transition-colors", hasActiveTools ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <PlusDropdown />
+                        </DropdownMenu>
+                        <textarea ref={inputRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown} placeholder="Ask anything…" rows={1} className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5" />
+                        <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}>
+                          <Send className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                   {/* Suggestion cards — 4 in one row */}
@@ -277,28 +324,22 @@ export function ChatView() {
       {!isEmpty && (
         <div className="border-t border-border px-4 py-3">
           <div className="max-w-4xl mx-auto">
-            <div className="flex items-end gap-2 bg-secondary/50 border border-border rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all">
-              <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
-                <DropdownMenuTrigger asChild>
-                  <button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="top" align="start" className="w-44">
-                  <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                    <Globe className="w-3.5 h-3.5 mr-2" />
-                    Web Search
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowPlus(false)}>
-                    <Paperclip className="w-3.5 h-3.5 mr-2" />
-                    Attach File
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <textarea ref={inputRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown} placeholder="Ask anything…" rows={1} className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5" />
-              <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}>
-                <Send className="w-3.5 h-3.5" />
-              </button>
+            <div className="bg-card border border-border rounded-xl focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all">
+              <ActivePills />
+              <div className="flex items-end gap-2 px-3 py-2.5">
+                <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
+                  <DropdownMenuTrigger asChild>
+                    <button className={cn("p-1 rounded hover:bg-accent transition-colors", hasActiveTools ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <PlusDropdown />
+                </DropdownMenu>
+                <textarea ref={inputRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown} placeholder="Ask anything…" rows={1} className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5" />
+                <button onClick={handleSend} disabled={!input.trim() || isTyping} className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}>
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

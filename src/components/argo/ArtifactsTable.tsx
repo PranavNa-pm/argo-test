@@ -77,7 +77,7 @@ export function ArtifactsTable() {
         </div>
 
         {/* Search bar — full width */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg">
+        <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg">
           <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
           <input
             value={artifactSearch}
