@@ -9,6 +9,7 @@ import {
   FileSignature, Table2, ScrollText, AlertCircle
 } from 'lucide-react';
 import { useArgo, AGENTS, TOOLS } from '@/context/ArgoContext';
+import { MOCK_PROJECT_FILES } from '@/components/argo/RightPanel';
 import argoLogo from '@/assets/argo-logo.svg';
 import { cn } from '@/lib/utils';
 import type { AdminTab } from '@/types/argo';
@@ -692,9 +693,9 @@ function SpaceWorkspaceView() {
   const [editDescription, setEditDescription] = useState('');
   const [editContext, setEditContext] = useState('');
   const [chatDisplayCount, setChatDisplayCount] = useState(20);
-  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState<'chats' | 'files' | 'members'>('chats');
   const chatSentinelRef = useRef<HTMLDivElement>(null);
-  const [shareSearch, setShareSearch] = useState('');
+  const [shareSearch] = useState('');
   const [chatSearch, setChatSearch] = useState('');
   const isShared = space?.visibility === 'shared';
   const isOwner = space?.owner === 'You';
@@ -810,76 +811,13 @@ function SpaceWorkspaceView() {
         </div>
         <div className="flex items-center gap-2">
           {isOwner && !space.isDefault && (
-            <div className="relative">
-              <button
-                onClick={() => setShowShareMenu(!showShareMenu)}
-                title="Share this project with team members"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                Share
-              </button>
-              {showShareMenu && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => { setShowShareMenu(false); setShareSearch(''); }} />
-                  <div className="absolute right-0 top-full mt-1 w-80 bg-popover border border-border rounded-lg shadow-lg z-20 p-3 space-y-3 animate-scale-in">
-                    <div>
-                      <div className="text-xs font-semibold text-foreground mb-1.5">Share via Link</div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 px-2.5 py-1.5 bg-secondary/50 border border-border rounded-md text-xs text-muted-foreground font-mono truncate select-all">
-                          https://argo.app/project/{space?.id || 'project-1'}
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(`https://argo.app/project/${space?.id || 'project-1'}`);
-                          }}
-                          className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors shrink-0"
-                          title="Copy link"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground mt-1">Anyone with this link must log in to view the project.</p>
-                    </div>
-                    <div className="border-t border-border" />
-                    <div className="opacity-50 pointer-events-none select-none" title="Coming after MVP">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="text-xs font-semibold text-foreground">Share with members</div>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">Coming soon</span>
-                      </div>
-                      <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg mb-2">
-                        <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                        <input
-                          value={shareSearch}
-                          onChange={() => {}}
-                          placeholder="Search by name..."
-                          className="flex-1 text-xs bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
-                          readOnly
-                        />
-                      </div>
-                      {filteredMembers.map(m => (
-                        <label key={m.name} className="flex items-center gap-2 text-sm text-foreground cursor-default py-1">
-                          <input type="checkbox" defaultChecked={m.selected} className="rounded border-border" readOnly />
-                          <span className="flex-1">{m.name}</span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">{m.role}</span>
-                        </label>
-                      ))}
-                      <button disabled className="w-full mt-2 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-semibold">Update Sharing</button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-          {!space.isDefault && (
             <button
-              onClick={() => openFilesPanel(activeSpaceId)}
-              title="View project files"
+              onClick={() => { setEditName(space.name); setEditDescription(space.description || ''); setEditContext(space.projectContext || ''); setEditing(true); }}
+              title="Edit project"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
-              <FileText className="w-3.5 h-3.5" />
-              Files
+              <Pencil className="w-3.5 h-3.5" />
+              Edit
             </button>
           )}
           <button
@@ -890,59 +828,167 @@ function SpaceWorkspaceView() {
             <Plus className="w-3.5 h-3.5" />
             New Chat
           </button>
-          {isOwner && !space.isDefault && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="More options">
-                  <MoreVertical className="w-3.5 h-3.5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onClick={() => { setEditName(space.name); setEditDescription(space.description || ''); setEditContext(space.projectContext || ''); setEditing(true); }}>
-                  <Pencil className="w-3.5 h-3.5 mr-2" />
-                  Edit project
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
         </div>
       </div>
 
-      {/* Chats */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs text-muted-foreground">{spaceChats.length} chats</span>
+      {/* Tab bar */}
+      {!space.isDefault && (
+        <div className="flex gap-0 border-b border-border -mt-2">
+          {(['chats', 'files', 'members'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 text-sm capitalize transition-colors border-b-2 -mb-px ${
+                activeTab === tab
+                  ? 'border-primary text-foreground font-medium'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {tab === 'chats' ? `Chats (${spaceChats.length})` : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </div>
+      )}
 
-
-        {spaceChats.length === 0 ? (
-          <div className="text-center py-8 animate-fade-in">
-            <MessageSquare className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm font-medium text-muted-foreground">No chats yet.</p>
-            <p className="text-xs text-muted-foreground mt-1">Create one to get started with this project.</p>
-          </div>
-        ) : (
-          <>
-            <div className="space-y-1">
-              {spaceChats
-                .filter(c => !chatSearch || c.name.toLowerCase().includes(chatSearch.toLowerCase()))
-                .slice(0, chatDisplayCount).map(c => (
-                <div key={c.id} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/30 transition-colors cursor-pointer group" onClick={() => handleOpenChat(c.id)}>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground">{c.name}</div>
-                    <div className="text-xs text-muted-foreground">{c.createdAt.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+      {/* Chats tab */}
+      {(space.isDefault || activeTab === 'chats') && (
+        <div>
+          {spaceChats.length === 0 ? (
+            <div className="text-center py-8 animate-fade-in">
+              <MessageSquare className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+              <p className="text-sm font-medium text-muted-foreground">No chats yet.</p>
+              <p className="text-xs text-muted-foreground mt-1">Create one to get started with this project.</p>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-1">
+                {spaceChats
+                  .filter(c => !chatSearch || c.name.toLowerCase().includes(chatSearch.toLowerCase()))
+                  .slice(0, chatDisplayCount).map(c => (
+                  <div key={c.id} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/30 transition-colors cursor-pointer group" onClick={() => handleOpenChat(c.id)}>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-foreground">{c.name}</div>
+                      <div className="text-xs text-muted-foreground">{c.createdAt.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                    </div>
+                    <div className="relative flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ChatMoreMenu chatId={c.id} chatName={c.name} renameChat={renameChat} />
+                    </div>
                   </div>
-                  <div className="relative flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ChatMoreMenu chatId={c.id} chatName={c.name} renameChat={renameChat} />
+                ))}
+              </div>
+              {spaceChats.length > chatDisplayCount && <div ref={chatSentinelRef} className="h-4" />}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Files tab */}
+      {!space.isDefault && activeTab === 'files' && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs text-muted-foreground">{(MOCK_PROJECT_FILES[activeSpaceId] || []).length} file{(MOCK_PROJECT_FILES[activeSpaceId] || []).length !== 1 ? 's' : ''}</span>
+            {isOwner && (
+              <button className="p-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" title="Upload file">
+                <Upload className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+          {(MOCK_PROJECT_FILES[activeSpaceId] || []).length === 0 ? (
+            <div className="text-center py-8 animate-fade-in">
+              <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+              <p className="text-sm font-medium text-muted-foreground">No files uploaded yet.</p>
+              <p className="text-xs text-muted-foreground mt-1">Upload files to share with your project.</p>
+            </div>
+          ) : (
+            <div className="space-y-0.5">
+              {(MOCK_PROJECT_FILES[activeSpaceId] || []).map((f, i) => (
+                <div key={i} className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/50 transition-colors group cursor-pointer">
+                  <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center shrink-0 mt-0.5">
+                    <FileText className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-foreground truncate">{f.name}</div>
+                    <div className="text-[11px] text-muted-foreground mt-0.5">
+                      <span className="font-mono">{f.type}</span>
+                      <span className="mx-1.5">·</span>
+                      {f.size}
+                      <span className="mx-1.5">·</span>
+                      {f.date}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                    <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="View"><Eye className="w-3.5 h-3.5" /></button>
+                    <button className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Download"><Download className="w-3.5 h-3.5" /></button>
+                    {isOwner && <button className="p-1.5 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>}
                   </div>
                 </div>
               ))}
             </div>
-            {/* Infinite scroll sentinel */}
-            {spaceChats.length > chatDisplayCount && <div ref={chatSentinelRef} className="h-4" />}
-          </>
-        )}
-      </div>
+          )}
+        </div>
+      )}
+
+      {/* Members tab */}
+      {!space.isDefault && activeTab === 'members' && (
+        <div className="space-y-4">
+          {/* Share link — owner only */}
+          {isOwner && (
+            <div className="p-3 bg-secondary/30 rounded-lg border border-border space-y-2">
+              <div className="text-xs font-semibold text-foreground">Share via Link</div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 px-2.5 py-1.5 bg-background border border-border rounded-md text-xs text-muted-foreground font-mono truncate select-all">
+                  https://argo.app/project/{space.id}
+                </div>
+                <button
+                  onClick={() => navigator.clipboard.writeText(`https://argo.app/project/${space.id}`)}
+                  className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                  title="Copy link"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <p className="text-[10px] text-muted-foreground">Anyone with this link must log in to view the project.</p>
+            </div>
+          )}
+
+          {/* Member list */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-foreground">Members ({shareMembers.length})</span>
+            </div>
+            <div className="space-y-0.5">
+              {shareMembers.map(m => (
+                <div key={m.name} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/50 transition-colors group">
+                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-medium text-primary">{m.name.charAt(0)}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-foreground">{m.name}</div>
+                  </div>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground shrink-0">{m.role}</span>
+                  {isOwner && (
+                    <button className="p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-all" title="Remove member">
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Invite by name — post MVP */}
+          <div className="opacity-50 pointer-events-none select-none border-t border-border pt-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-semibold text-foreground">Invite by name</div>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">Coming soon</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 border border-border rounded-lg">
+              <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+              <input value={shareSearch} onChange={() => {}} placeholder="Search by name..." className="flex-1 text-xs bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none" readOnly />
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
