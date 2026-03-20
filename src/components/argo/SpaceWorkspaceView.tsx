@@ -71,8 +71,8 @@ export function SpaceWorkspaceView() {
             <h1 className="text-lg font-semibold text-foreground tracking-tight">{space.name}</h1>
             <span className="text-sm text-muted-foreground">•</span>
             {isShared
-              ? <Globe className="w-3.5 h-3.5 text-muted-foreground" title="Shared project" />
-              : <Lock className="w-3.5 h-3.5 text-muted-foreground" title="Private project" />}
+              ? <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+              : <Lock className="w-3.5 h-3.5 text-muted-foreground" />}
           </div>
           {space.owner && (
             <p className="text-xs text-muted-foreground mt-1">
