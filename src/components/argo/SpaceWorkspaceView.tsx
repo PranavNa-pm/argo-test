@@ -105,7 +105,7 @@ export function SpaceWorkspaceView() {
 
       {/* Tab bar */}
       {!space.isDefault && (
-        <div className="flex gap-0 border-b border-border -mt-2">
+        <div className="flex items-center gap-0 border-b border-border -mt-2">
           {(['chats', 'files', 'members'] as const).filter(tab => tab !== 'members' || isShared).map(tab => (
             <button
               key={tab}
@@ -119,6 +119,16 @@ export function SpaceWorkspaceView() {
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
+          {isShared && isOwner && (
+            <button
+              onClick={() => navigator.clipboard.writeText(`https://argo.app/project/${space.id}`)}
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 mb-1 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              title="Copy project link"
+            >
+              <Link2 className="w-3 h-3" />
+              Copy link
+            </button>
+          )}
         </div>
       )}
 

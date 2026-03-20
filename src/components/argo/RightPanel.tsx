@@ -82,6 +82,7 @@ export function RightPanel() {
       <div className="px-4 py-3 border-b border-border space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
+            <span className="text-xs font-mono text-muted-foreground shrink-0">v{currentVersion}</span>
             <h2 className="text-sm font-semibold text-foreground truncate">{activeArtifact.name}</h2>
           </div>
           <div className="flex items-center gap-1 shrink-0">
