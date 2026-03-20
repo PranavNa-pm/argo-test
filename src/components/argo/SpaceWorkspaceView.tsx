@@ -122,8 +122,8 @@ export function SpaceWorkspaceView() {
           {isShared && isOwner && (
             <button
               onClick={() => navigator.clipboard.writeText(`https://argo.app/project/${space.id}`)}
-              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 mb-1 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              title="Copy project link"
+              className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              title="Copy project link — anyone with this link must log in to view"
             >
               <Link2 className="w-3 h-3" />
               Copy link
@@ -221,16 +221,6 @@ export function SpaceWorkspaceView() {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs text-muted-foreground">{shareMembers.length} member{shareMembers.length !== 1 ? 's' : ''}</p>
-              {isOwner && (
-                <button
-                  onClick={() => navigator.clipboard.writeText(`https://argo.app/project/${space.id}`)}
-                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  title="Copy project link — anyone with this link must log in to view"
-                >
-                  <Link2 className="w-3 h-3" />
-                  Copy link
-                </button>
-              )}
             </div>
             <div className="space-y-0.5">
               {shareMembers.map(m => (
