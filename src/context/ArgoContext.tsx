@@ -374,7 +374,6 @@ export function ArgoProvider({ children }: { children: ReactNode }) {
   const [chats, setChats] = useState<Chat[]>([
     // General Chat (12 chats)
     { id: 'general-sandbox', name: 'Sandbox', spaceId: MY_SPACE_ID, messages: [{ id: 'gsb-1', role: 'user' as const, content: 'This is the sandbox environment.', timestamp: new Date('2025-03-20') }], createdAt: new Date('2025-03-20') },
-    { id: 'general-production-2', name: 'Production', spaceId: MY_SPACE_ID, messages: [{ id: 'gprod-2', role: 'user' as const, content: 'This is the production environment.', timestamp: new Date('2025-03-20') }], createdAt: new Date('2025-03-20') },
     { id: 'general', name: 'PRD', spaceId: MY_SPACE_ID, messages: [
       { id: 'g1-1', role: 'user' as const, content: 'I need to write a PRD for a new reporting dashboard we\'re building for our sales team.', timestamp: new Date('2025-03-10T10:00:00') },
       { id: 'g1-2', role: 'assistant' as const, content: 'Happy to help. Before we get into it — who\'s the primary audience for this dashboard? Just the sales team, or does leadership need to use it too?', agentId: 'general', agentName: 'General Agent', timestamp: new Date('2025-03-10T10:00:30') },
