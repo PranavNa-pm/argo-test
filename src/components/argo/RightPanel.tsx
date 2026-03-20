@@ -3,8 +3,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
   FileText, X, ChevronDown,
-  Download, Maximize2, Minimize2, Upload,
-  Trash2, FolderOpen
+  Download, Maximize2, Minimize2, Upload, FolderOpen,
+  Trash2
 } from 'lucide-react';
 import { useArgo } from '@/context/ArgoContext';
 import { cn } from '@/lib/utils';
@@ -75,7 +75,6 @@ export function RightPanel() {
       <div className="px-4 py-3 border-b border-border space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <FileText className="w-4 h-4 text-primary shrink-0" />
             <h2 className="text-sm font-semibold text-foreground truncate">{activeArtifact.name}</h2>
           </div>
           <div className="flex items-center gap-1 shrink-0">
@@ -90,7 +89,7 @@ export function RightPanel() {
 
         {/* Actions bar */}
         <div className="flex items-center gap-2 pt-1">
-          <button className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="Download">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors" title="Download">
             <Download className="w-3.5 h-3.5" />
             Download
           </button>
