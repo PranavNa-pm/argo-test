@@ -13,6 +13,63 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ChatMessageSkeleton } from '@/components/argo/skeletons/ChatMessageSkeleton';
+import type { Chat, Space } from '@/types/argo';
+
+// ─── ChatHeader ───────────────────────────────────────────────
+function ChatHeader({ chat, space }: { chat: Chat; space: Space }) {
+  const { renameChat } = useArgo();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(chat.name);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleStartEdit = () => {
+    setDraft(chat.name);
+    setEditing(true);
+    setTimeout(() => inputRef.current?.select(), 0);
+  };
+
+  const handleSave = () => {
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== chat.name) renameChat(chat.id, trimmed);
+    setEditing(false);
+  };
+
+  return (
+    <div className="border-b border-border px-4 py-3">
+      <div className="flex items-start gap-2">
+        {editing ? (
+          <input
+            ref={inputRef}
+            value={draft}
+            onChange={e => setDraft(e.target.value)}
+            onBlur={handleSave}
+            onKeyDown={e => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') setEditing(false); }}
+            className="text-base font-semibold text-foreground bg-transparent border-b border-primary outline-none w-full max-w-sm"
+            autoFocus
+          />
+        ) : (
+          <button
+            onClick={handleStartEdit}
+            className="text-base font-semibold text-foreground hover:text-foreground/80 transition-colors text-left"
+            title="Click to rename"
+          >
+            {chat.name}
+          </button>
+        )}
+      </div>
+      <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+        {space.isDefault ? (
+          <span>General Chat</span>
+        ) : (
+          <>
+            <span>{space.name}</span>
+            {space.visibility === 'shared' ? <Globe className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 25;
@@ -220,21 +277,7 @@ export function ChatView() {
 
       {/* Chat Header */}
       {activeChat && activeSpace && (
-        <div className="border-b border-border px-4 py-3">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-xs text-muted-foreground mb-0.5 flex items-center gap-1.5">
-              {activeSpace.isDefault ? (
-                <span>General Chat</span>
-              ) : (
-                <>
-                  <span>Project: {activeSpace.name}</span>
-                  {activeSpace.visibility === 'shared' ? <Globe className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                </>
-              )}
-            </div>
-            <div className="text-sm font-semibold text-foreground">{activeChat.name}</div>
-          </div>
-        </div>
+        <ChatHeader chat={activeChat} space={activeSpace} />
       )}
 
       {/* Messages */}
