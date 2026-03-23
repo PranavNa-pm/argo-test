@@ -17,29 +17,29 @@ import {
 
 // ─── Mock Files Data (shared) ────────────────────────────────
 
-export const MOCK_PROJECT_FILES: Record<string, { name: string; type: string; size: string; uploadedBy: string; role: string; date: string }[]> = {
+export const MOCK_PROJECT_FILES: Record<string, { name: string; type: string; size: string; uploadedBy: string; role: string; date: string; artifactId?: string }[]> = {
   'space-1': [
-    { name: 'Client_Brief_Q1.pdf', type: 'PDF', size: '1.2 MB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 10, 2025' },
+    { name: 'Retail Analytics RFP Response', type: 'PDF', size: '8.4 MB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 20, 2025', artifactId: 'demo-rfp' },
+    { name: 'Proposal Outline – RetailCo', type: 'Markdown', size: '4.2 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 18, 2025', artifactId: 'demo-1' },
+    { name: 'Draft SOW – RetailCo', type: 'Word', size: '6.5 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 15, 2025', artifactId: 'demo-4' },
+    { name: 'Pricing Model – RetailCo', type: 'Markdown', size: '3.0 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 12, 2025', artifactId: 'demo-7' },
+    { name: 'Discovery Call Summary', type: 'Markdown', size: '2.1 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 10, 2025', artifactId: 'demo-6' },
     { name: 'Pricing_Sheet_2025.xlsx', type: 'Excel', size: '340 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 12, 2025' },
-    { name: 'Technical_Architecture.docx', type: 'Word', size: '2.1 MB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 15, 2025' },
-    { name: 'Meeting_Notes_Kickoff.md', type: 'Markdown', size: '18 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 18, 2025' },
-    { name: 'Scope_Document_v2.pdf', type: 'PDF', size: '890 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 20, 2025' },
-    { name: 'Risk_Assessment.docx', type: 'Word', size: '450 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 22, 2025' },
     { name: 'Timeline_Gantt.xlsx', type: 'Excel', size: '1.8 MB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Feb 25, 2025' },
-    { name: 'Stakeholder_Map.pdf', type: 'PDF', size: '620 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 01, 2025' },
     { name: 'Brand_Guidelines.pdf', type: 'PDF', size: '5.4 MB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 03, 2025' },
-    { name: 'API_Documentation.md', type: 'Markdown', size: '42 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 05, 2025' },
   ],
   'space-2': [
-    { name: 'Competitor_Analysis.pdf', type: 'PDF', size: '3.5 MB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Jan 20, 2025' },
+    { name: 'Executive Summary – Shopify Proposal', type: 'Markdown', size: '3.1 KB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Jan 20, 2025', artifactId: 'demo-2' },
+    { name: 'Market Landscape Table – FinTech', type: 'HTML', size: '3.5 MB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Jan 28, 2025', artifactId: 'demo-5' },
+    { name: 'Stakeholder Map – Shopify', type: 'HTML', size: '1.8 KB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Feb 09, 2025', artifactId: 'demo-8' },
     { name: 'Budget_Forecast.xlsx', type: 'Excel', size: '520 KB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Jan 25, 2025' },
-    { name: 'Market_Research_Q1.pdf', type: 'PDF', size: '2.3 MB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Jan 28, 2025' },
     { name: 'Client_Questionnaire.docx', type: 'Word', size: '180 KB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Feb 02, 2025' },
-    { name: 'Proposal_Template.docx', type: 'Word', size: '290 KB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Feb 05, 2025' },
     { name: 'Revenue_Projections.xlsx', type: 'Excel', size: '410 KB', uploadedBy: 'Sarah Chen', role: 'Owner', date: 'Feb 10, 2025' },
   ],
   'space-3': [
-    { name: 'Migration_Plan.pdf', type: 'PDF', size: '1.9 MB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 02, 2025' },
+    { name: 'Migration Playbook – Databricks', type: 'Markdown', size: '5.2 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 06, 2025', artifactId: 'demo-9' },
+    { name: 'Risk Register – Enterprise Migration', type: 'Markdown', size: '2.4 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 09, 2025', artifactId: 'demo-10' },
+    { name: 'Mitigation Strategy – Databricks', type: 'Markdown', size: '7.8 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 12, 2025', artifactId: 'demo-12' },
     { name: 'Infrastructure_Diagram.png', type: 'Image', size: '780 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 05, 2025' },
     { name: 'Compliance_Checklist.xlsx', type: 'Excel', size: '220 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 08, 2025' },
     { name: 'SLA_Agreement_Draft.pdf', type: 'PDF', size: '560 KB', uploadedBy: 'Alex Thompson', role: 'Owner', date: 'Mar 10, 2025' },

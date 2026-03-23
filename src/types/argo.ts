@@ -86,6 +86,7 @@ export interface Space {
   owner: string;
   sharedBy?: string;
   createdAt: Date;
+  shareCode?: string; // permanent unique token — never changes even if name/description changes
 }
 
 export type CenterView = 'chat' | 'config' | 'artifacts-table' | 'space-workspace' | 'new-space' | 'projects';

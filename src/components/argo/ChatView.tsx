@@ -281,71 +281,57 @@ export function ChatView() {
       )}
 
       {/* Messages */}
-      <div className={cn("flex-1 overflow-y-auto argo-scrollbar", isEmpty && "flex flex-col")}>
-        <div className={cn("max-w-4xl mx-auto px-4 py-6", isEmpty && "flex-1 flex flex-col")}>
-          {/* ═══ Welcome Empty State — centred input ═══ */}
-          {isEmpty && (
-            isLoading ? (
-              <ChatMessageSkeleton />
-            ) : (
-              <div className="flex flex-col items-center justify-center flex-1 animate-fade-in">
-                <div className="w-full max-w-xl">
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-foreground mb-1">Hello, Pranav.</h2>
-                    <p className="text-sm text-muted-foreground">What would you like to work on today?</p>
-                  </div>
-                  {/* Centred input */}
-                  <div className="mb-5">
-                    <div className="bg-card border border-border rounded-xl focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all shadow-sm">
-                      <ActivePills />
-                      <div className="flex items-end gap-2 px-3 py-2.5">
-                        <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
-                          <DropdownMenuTrigger asChild>
-                            <button className={cn(
-                              "p-1 rounded hover:bg-accent transition-colors",
-                              hasActiveTools ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                            )}>
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <PlusDropdown />
-                        </DropdownMenu>
-                        <textarea
-                          ref={inputRef}
-                          value={input}
-                          onChange={handleTextareaChange}
-                          onKeyDown={handleKeyDown}
-                          placeholder="Ask anything…"
-                          rows={1}
-                          className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5"
-                        />
-                        <button
-                          onClick={handleSend}
-                          disabled={!input.trim() || isTyping}
-                          className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}
-                        >
-                          <Send className="w-3.5 h-3.5" />
+      <div className="flex-1 overflow-y-auto argo-scrollbar flex flex-col">
+
+        {/* ═══ Welcome Empty State ═══ */}
+        {isEmpty && (
+          isLoading ? (
+            <div className="max-w-4xl mx-auto w-full px-4 py-6"><ChatMessageSkeleton /></div>
+          ) : (
+            <div className="flex-1 flex flex-col justify-center px-4 py-6 w-full animate-fade-in">
+              <div className="w-full max-w-xl mx-auto">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-foreground mb-1">Hello, Pranav.</h2>
+                  <p className="text-sm text-muted-foreground">What would you like to work on today?</p>
+                </div>
+                <div className="bg-card border border-border rounded-xl focus-within:ring-1 focus-within:ring-ring focus-within:border-primary/50 transition-all shadow-sm">
+                  <ActivePills />
+                  <div className="flex items-end gap-2 px-3 py-2.5">
+                    <DropdownMenu open={showPlus} onOpenChange={setShowPlus}>
+                      <DropdownMenuTrigger asChild>
+                        <button className={cn(
+                          "p-1 rounded hover:bg-accent transition-colors",
+                          hasActiveTools ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                        )}>
+                          <Plus className="w-4 h-4" />
                         </button>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Suggestion cards — 4 in one row */}
-                  <div className="grid grid-cols-4 gap-3">
-                    {selectedAgent?.capabilities.slice(0, 4).map(c => (
-                      <button
-                        key={c.id}
-                        onClick={() => handleCapabilityClick(c.name)}
-                        className="px-3 py-2.5 rounded-xl border border-border hover:border-primary/40 hover:bg-accent/50 text-center transition-all flex items-center justify-center min-h-[52px]"
-                      >
-                        <div className="text-xs font-medium text-foreground leading-snug">{c.name}</div>
-                      </button>
-                    ))}
+                      </DropdownMenuTrigger>
+                      <PlusDropdown />
+                    </DropdownMenu>
+                    <textarea
+                      ref={inputRef}
+                      value={input}
+                      onChange={handleTextareaChange}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Ask anything…"
+                      rows={1}
+                      className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[24px] max-h-[160px] py-0.5"
+                    />
+                    <button
+                      onClick={handleSend}
+                      disabled={!input.trim() || isTyping}
+                      className={cn("p-1.5 rounded-lg transition-colors", input.trim() && !isTyping ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground")}
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               </div>
-            )
-          )}
+            </div>
+          )
+        )}
 
+        <div className="max-w-4xl mx-auto w-full px-4 py-6">
           {activeChat?.messages.map((msg, idx) => (
             <div
               key={msg.id}

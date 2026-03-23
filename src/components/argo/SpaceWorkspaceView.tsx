@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Plus, Globe, Download, Trash2, Upload,
   Lock, MessageSquare, Link2, FileText,
-  Pencil,
+  Pencil, Check,
 } from 'lucide-react';
 import { useArgo } from '@/context/ArgoContext';
 import { MOCK_PROJECT_FILES } from '@/components/argo/RightPanel';
@@ -23,6 +23,12 @@ export function SpaceWorkspaceView() {
   const spaceChats = chats.filter(c => c.spaceId === activeSpaceId);
   const spaceArtifacts = artifacts.filter(a => a.spaceId === activeSpaceId);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(`https://argo.app/invite/${space?.shareCode}`);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
   const [chatDisplayCount, setChatDisplayCount] = useState(20);
   const [activeTab, setActiveTab] = useState<'chats' | 'files' | 'members'>('chats');
   const chatSentinelRef = useRef<HTMLDivElement>(null);
@@ -121,12 +127,17 @@ export function SpaceWorkspaceView() {
           ))}
           {isShared && isOwner && (
             <button
-              onClick={() => navigator.clipboard.writeText(`https://argo.app/project/${space.id}`)}
-              className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-              title="Copy project link — anyone with this link must log in to view"
+              onClick={handleCopyLink}
+              className="ml-auto flex items-center gap-2 px-2.5 py-1 rounded-md bg-background border border-border hover:bg-accent transition-colors group/copy"
+              title="Copy project link"
             >
-              <Link2 className="w-3 h-3" />
-              Copy link
+              <span className="text-[10px] font-mono text-muted-foreground truncate max-w-[160px]">
+                argo.app/invite/{space.shareCode}
+              </span>
+              <span className="flex items-center gap-1 text-xs text-muted-foreground group-hover/copy:text-foreground transition-colors shrink-0">
+                {linkCopied ? <Check className="w-3 h-3 text-primary" /> : <Link2 className="w-3 h-3" />}
+                {linkCopied ? 'Copied' : 'Copy'}
+              </span>
             </button>
           )}
         </div>
@@ -192,7 +203,7 @@ export function SpaceWorkspaceView() {
           ) : (
             <div className="space-y-0.5">
               {(MOCK_PROJECT_FILES[activeSpaceId] || []).map((f, i) => (
-                <div key={i} onClick={() => openFilesPanel(activeSpaceId!)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent/50 transition-colors group cursor-pointer">
+                <div key={i} onClick={() => { if (f.artifactId) { setActiveArtifactId(f.artifactId); setRightPanelView('artifact'); } }} className={cn("flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group", f.artifactId ? "hover:bg-black/5 cursor-pointer" : "cursor-default")}>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-foreground truncate">{f.name}</div>
                     <div className="text-[11px] text-muted-foreground mt-0.5">
@@ -243,7 +254,7 @@ export function SpaceWorkspaceView() {
       {showEditModal && (
         <CreateProjectModal
           onClose={() => setShowEditModal(false)}
-          editSpace={{ id: space.id, name: space.name, description: space.description || '', projectContext: space.projectContext }}
+          editSpace={{ id: space.id, name: space.name, description: space.description || '', projectContext: space.projectContext, visibility: space.visibility as 'private' | 'shared', shareCode: space.shareCode }}
         />
       )}
       </div>

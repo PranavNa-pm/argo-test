@@ -1,6 +1,11 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from 'react';
 import type { Agent, Tool, Artifact, Chat, Space, Message, ExecutionTrace, RightPanelView, AdminTab, CenterView } from '@/types/argo';
 
+// ─── Helpers ─────────────────────────────────────────────────
+
+/** Generates a permanent unique share code (8 alphanumeric chars). Never regenerated after creation. */
+const generateShareCode = () => Math.random().toString(36).slice(2, 6) + Math.random().toString(36).slice(2, 6);
+
 // ─── Mock Data ───────────────────────────────────────────────
 
 export const TOOLS: Tool[] = [
@@ -337,11 +342,11 @@ interface ArgoContextType {
   setCenterView: (v: CenterView) => void;
   setSidebarCollapsed: (v: boolean) => void;
   sendMessage: (content: string) => void;
-  createSpace: (name: string, description?: string, projectContext?: string) => void;
+  createSpace: (name: string, description?: string, projectContext?: string, visibility?: 'private' | 'shared') => void;
   createChat: (name: string, spaceId: string) => void;
   renameChat: (chatId: string, newName: string) => void;
   renameSpace: (spaceId: string, newName: string) => void;
-  updateSpace: (spaceId: string, updates: Partial<{ name: string; description: string; projectContext: string }>) => void;
+  updateSpace: (spaceId: string, updates: Partial<{ name: string; description: string; projectContext: string; visibility: 'private' | 'shared' }>) => void;
   renameArtifact: (artifactId: string, newName: string) => void;
   openSpaceWorkspace: (spaceId: string) => void;
   openFilesPanel: (spaceId: string) => void;
@@ -366,9 +371,9 @@ export function ArgoProvider({ children }: { children: ReactNode }) {
   const [spaces, setSpaces] = useState<Space[]>([
     { id: MY_SPACE_ID, name: 'General Chat', description: 'Your default space for general conversations.', visibility: 'private', isDefault: true, owner: 'You', createdAt: new Date('2025-01-01') },
     { id: 'space-1', name: 'RetailCo', description: 'Pre-sales materials and proposals for active client engagements.', visibility: 'private', owner: 'You', createdAt: new Date('2025-01-15') },
-    { id: 'space-2', name: 'Shopify Proposal', description: 'Competitive analysis and market research for Q1 planning.', visibility: 'shared', owner: 'Sarah Chen', sharedBy: 'Sarah Chen', createdAt: new Date('2025-02-01') },
-    { id: 'space-3', name: 'Databricks', description: 'Enterprise migration project for Databricks.', visibility: 'shared', owner: 'You', createdAt: new Date('2025-03-01') },
-    { id: 'space-4', name: 'Internal Operations 2025', description: 'Process improvements and tooling for internal teams.', visibility: 'shared', owner: 'James Wilson', sharedBy: 'James Wilson', createdAt: new Date('2025-03-15') },
+    { id: 'space-2', name: 'Shopify Proposal', description: 'Competitive analysis and market research for Q1 planning.', visibility: 'shared', owner: 'Sarah Chen', sharedBy: 'Sarah Chen', createdAt: new Date('2025-02-01'), shareCode: 'kx7mp2qn' },
+    { id: 'space-3', name: 'Databricks', description: 'Enterprise migration project for Databricks.', visibility: 'shared', owner: 'You', createdAt: new Date('2025-03-01'), shareCode: 'rb4tz9wc' },
+    { id: 'space-4', name: 'Internal Operations 2025', description: 'Process improvements and tooling for internal teams.', visibility: 'shared', owner: 'James Wilson', sharedBy: 'James Wilson', createdAt: new Date('2025-03-15'), shareCode: 'hn2qx8af' },
   ]);
   const [activeSpaceId, setActiveSpaceId] = useState<string>(MY_SPACE_ID);
   const [chats, setChats] = useState<Chat[]>([
@@ -812,9 +817,9 @@ If Phase 1 cutover has not completed by **June 1, 2025**, the following triggers
     }, 1500);
   }, [activeChatId, selectedAgentId, activeSpaceId, selectedAgent, chats, spaces]);
 
-  const createSpace = useCallback((name: string, description?: string, projectContext?: string) => {
+  const createSpace = useCallback((name: string, description?: string, projectContext?: string, visibility: 'private' | 'shared' = 'private') => {
     const id = `space-${Date.now()}`;
-    setSpaces(prev => [...prev, { id, name, description: description || '', projectContext: projectContext || undefined, visibility: 'private', owner: 'You', createdAt: new Date() }]);
+    setSpaces(prev => [...prev, { id, name, description: description || '', projectContext: projectContext || undefined, visibility, owner: 'You', createdAt: new Date(), ...(visibility === 'shared' ? { shareCode: generateShareCode() } : {}) }]);
     setActiveSpaceId(id);
     const chatId = `chat-${Date.now()}`;
     setChats(prev => [...prev, { id: chatId, name: 'New Chat', spaceId: id, messages: [], createdAt: new Date() }]);
@@ -866,8 +871,13 @@ If Phase 1 cutover has not completed by **June 1, 2025**, the following triggers
     setSpaces(prev => prev.map(s => s.id === spaceId ? { ...s, name: newName } : s));
   }, []);
 
-  const updateSpace = useCallback((spaceId: string, updates: Partial<{ name: string; description: string; projectContext: string }>) => {
-    setSpaces(prev => prev.map(s => s.id === spaceId ? { ...s, ...updates } : s));
+  const updateSpace = useCallback((spaceId: string, updates: Partial<{ name: string; description: string; projectContext: string; visibility: 'private' | 'shared' }>) => {
+    setSpaces(prev => prev.map(s => {
+      if (s.id !== spaceId) return s;
+      // Generate shareCode the first time a project becomes shared — never overwrite an existing one
+      const shareCode = updates.visibility === 'shared' && !s.shareCode ? generateShareCode() : s.shareCode;
+      return { ...s, ...updates, shareCode };
+    }));
   }, []);
 
   const renameArtifact = useCallback((artifactId: string, newName: string) => {
