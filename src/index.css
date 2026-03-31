@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 40 8% 94%;
+    --background: 210 17% 97%;
     --foreground: 220 20% 12%;
 
     --card: 0 0% 100%;
@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 12%;
 
-    --primary: 193 75% 42%;
+    --primary: 200 68% 38%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 12% 93%;
@@ -24,7 +24,7 @@
     --muted: 220 8% 96%;
     --muted-foreground: 220 8% 48%;
 
-    --accent: 40 8% 91%;
+    --accent: 220 13% 91%;
     --accent-foreground: 220 20% 12%;
 
     --destructive: 0 72% 51%;
@@ -32,24 +32,24 @@
 
     --border: 220 10% 89%;
     --input: 220 10% 89%;
-    --ring: 193 75% 42%;
+    --ring: 200 68% 38%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 40 8% 94%;
+    --sidebar-background: 210 15% 95%;
     --sidebar-foreground: 220 8% 28%;
-    --sidebar-primary: 193 75% 42%;
+    --sidebar-primary: 200 68% 38%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 10% 91%;
+    --sidebar-accent: 220 13% 91%;
     --sidebar-accent-foreground: 220 20% 12%;
     --sidebar-border: 220 10% 89%;
-    --sidebar-ring: 193 75% 42%;
+    --sidebar-ring: 200 68% 38%;
 
     /* Custom tokens */
     --surface-elevated: 220 14% 97%;
     --surface-hover: 220 10% 93%;
     --text-dim: 220 8% 52%;
-    --accent-glow: 193 75% 42%;
+    --accent-glow: 200 68% 38%;
     --success: 152 55% 38%;
     --warning: 38 90% 50%;
     --info: 210 70% 50%;
@@ -110,7 +110,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Geist', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

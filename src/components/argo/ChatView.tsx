@@ -344,6 +344,7 @@ export function ChatView() {
                 {orgSkills.map(skill => (
                   <DropdownMenuItem
                     key={skill.id}
+                    title={skill.description}
                     onClick={() => { setActiveSkill(skill); setShowPlus(false); }}
                   >
                     {skill.name}

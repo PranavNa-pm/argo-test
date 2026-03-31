@@ -21,15 +21,15 @@ All colors must come from CSS variables. Never hardcode hex, rgb, or hsl values 
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--background` | hsl(40 10% 98%) | Page/canvas background — warm off-white |
+| `--background` | hsl(210 17% 97%) | Page/canvas background — cool blue-gray |
 | `--foreground` | hsl(220 20% 12%) | Primary text |
 | `--card` | hsl(0 0% 100%) | Chat area, modals, elevated surfaces |
-| `--sidebar-background` | hsl(40 8% 94%) | Sidebar — slightly deeper warm gray |
-| `--primary` | hsl(193 75% 42%) | Brand teal — CTAs, active states, links |
+| `--sidebar-background` | hsl(210 15% 95%) | Sidebar — slightly deeper cool gray |
+| `--primary` | hsl(200 68% 38%) | Brand blue — CTAs, active states, links |
 | `--secondary` | hsl(220 12% 93%) | Subtle fills, code backgrounds |
 | `--muted` | hsl(220 8% 96%) | Placeholder backgrounds |
 | `--muted-foreground` | hsl(220 8% 48%) | Metadata, secondary labels |
-| `--accent` | hsl(40 8% 91%) | Hover states, selected sidebar items |
+| `--accent` | hsl(220 13% 91%) | Hover states, selected sidebar items |
 | `--border` | hsl(220 10% 89%) | All borders |
 | `--destructive` | hsl(0 72% 51%) | Errors, destructive actions |
 
@@ -43,7 +43,7 @@ All colors must come from CSS variables. Never hardcode hex, rgb, or hsl values 
 
 ## Typography
 
-**Font family:** Geist (loaded from Google Fonts). No overrides.
+**Font family:** Inter (loaded from Google Fonts). No overrides.
 **Monospace:** JetBrains Mono — code blocks, file extensions, timestamps only.
 
 | Role | Class |
