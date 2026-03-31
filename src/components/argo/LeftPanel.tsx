@@ -221,7 +221,6 @@ export function LeftPanel() {
       <div className="px-4 py-3.5 border-b border-sidebar-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src={argoLogo} alt="ARGO" className="h-3 w-auto" />
-          <span className="text-[10px] font-medium text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded-full tracking-wide">Production</span>
         </div>
         <button onClick={() => setSidebarCollapsed(true)} className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Collapse sidebar">
           <PanelLeft className="w-4 h-4" />
